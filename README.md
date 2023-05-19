@@ -1,6 +1,6 @@
 ## 简介
 
-[Naive Ui Admin](https://github.com/jekip/naive-ui-admin) 完全免费，且可商用，基于 [Vue3.0](https://github.com/vuejs/vue-next)、[Vite](https://github.com/vitejs/vite)、 [Naive UI](https://www.naiveui.com/)、[TypeScript](https://www.typescriptlang.org/) 的中后台解决方案，它使用了最新的前端技术栈，并提炼了典型的业务模型，页面，包括二次封装组件、动态菜单、权限校验、粒子化权限控制等功能，它可以帮助你快速搭建企业级中后台项目， 相信不管是从新技术使用还是其他方面，都能帮助到你。
+[Gin Admin Naive Ui](https://github.com/oldweipro/gin-admin-naive-ui) 完全免费，且可商用，基于 [Vue3.0](https://github.com/vuejs/vue-next)、[Vite](https://github.com/vitejs/vite)、 [Naive UI](https://www.naiveui.com/)、[TypeScript](https://www.typescriptlang.org/) 的中后台解决方案，它使用了最新的前端技术栈，并提炼了典型的业务模型，页面，包括二次封装组件、动态菜单、权限校验、粒子化权限控制等功能，它可以帮助你快速搭建企业级中后台项目， 相信不管是从新技术使用还是其他方面，都能帮助到你。
 
 ## 特性
 - 二次封装实用高扩展性组件
@@ -11,13 +11,13 @@
 
 
 ## 预览
-- [naive-ui-admin](https://jekip.github.io)
+- [gin-admin-naive-ui](https://oldweipro.github.io)
 
 账号：admin，密码：123456（随意）
 
 ## 文档
 
-[文档地址](https://jekip.github.io/docs)
+[文档地址](https://oldweipro.github.io/docs)
 
 ## 准备
 
@@ -66,7 +66,7 @@ yarn build
 
 ## 如何贡献
 
-非常欢迎你的加入！[提一个 Issue](https://github.com/jekip/naive-ui-admin/issues) 或者提交一个 Pull Request。
+非常欢迎你的加入！[提一个 Issue](https://github.com/oldweipro/gin-admin-naive-ui/issues) 或者提交一个 Pull Request。
 
 **Pull Request:**
 
@@ -105,17 +105,17 @@ yarn build
 | not support | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
 ## 维护者
-[@Ah jung](https://github.com/jekip)
+[@oldweipro](https://github.com/oldweipro)
 
 ## 交流
 
-`Naive Ui Admin` 使用或者其他问题，都可以在群内讨论或提问。
+`Gin Admin Naive Ui` 使用或者其他问题，都可以在群内讨论或提问。
 
-![160335146-c28dd205-4600-4d62-b2c6-6456034ab7b1](https://user-images.githubusercontent.com/19426584/217689718-407e6cb9-dd3b-4a11-a025-3c58834b52ff.jpg)
+[//]: # (![暂无]&#40;https://pan.oldwei.com/d/%E5%A3%81%E7%BA%B8/%E5%9B%BE%E6%A0%87/Flash1987/%E5%90%83%E8%B4%A7%E8%81%94%E7%9B%9F/%E8%96%AF%E6%9D%A1.png?sign=B4nTK0-ohJ5DGbnTiQnIgtSr8KZYvYcfnf_aRaEY5V4=:0&#41;)
 
 ## 赞助
 #### 如果你觉得这个项目帮助到了你，你可以帮作者买一杯果汁表示鼓励 🍹。
 
-![donate](https://jekip.github.io/docs/images/sponsor.png)
+[//]: # (![微信]&#40;https://pan.oldwei.com/d/%E5%A3%81%E7%BA%B8/%E5%9B%BE%E6%A0%87/Flash1987/%E5%90%83%E8%B4%A7%E8%81%94%E7%9B%9F/%E8%96%AF%E6%9D%A1.png?sign=B4nTK0-ohJ5DGbnTiQnIgtSr8KZYvYcfnf_aRaEY5V4=:0&#41;)
 
-[Paypal Me](https://www.paypal.com/paypalme/majunping)
+[//]: # (![支付宝]&#40;https://pan.oldwei.com/d/%E5%A3%81%E7%BA%B8/%E5%9B%BE%E6%A0%87/Flash1987/%E5%90%83%E8%B4%A7%E8%81%94%E7%9B%9F/%E8%96%AF%E6%9D%A1.png?sign=B4nTK0-ohJ5DGbnTiQnIgtSr8KZYvYcfnf_aRaEY5V4=:0&#41;)

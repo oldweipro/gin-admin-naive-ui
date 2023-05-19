@@ -1,7 +1,7 @@
 import * as NaiveUI from 'naive-ui';
 import { computed } from 'vue';
 import { useDesignSetting } from '@/store/modules/designSetting';
-import { lighten } from '@/utils/index';
+import { lighten } from '@/utils';
 
 /**
  * 挂载 Naive-ui 脱离上下文的 API

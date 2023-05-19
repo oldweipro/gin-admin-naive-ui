@@ -1,10 +1,10 @@
 {
-  "name": "naive-ui-admin",
+  "name": "gin-admin-naive-ui",
   "version": "1.8.2",
   "author": {
-    "name": "Ahjung",
-    "email": "735878602@qq.com",
-    "url": "https://github.com/jekip/naive-ui-admin"
+    "name": "oldweipro",
+    "email": "oldweipro@gmail.com",
+    "url": "https://github.com/oldweipro/gin-admin-naive-ui"
   },
   "private": true,
   "scripts": {
