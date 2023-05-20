@@ -17,13 +17,19 @@
           :rules="rules"
         >
           <n-form-item path="username">
-            <n-input v-model:value="formInline.username" placeholder="请输入用户名">
+            <n-input v-model:value="formInline.username" placeholder="请输入用户名/手机号">
               <template #prefix>
                 <n-icon size="18" color="#808695">
                   <PersonOutline />
                 </n-icon>
               </template>
             </n-input>
+          </n-form-item>
+          <n-form-item path="smsCode" v-if="isRegister">
+            <n-input v-model:value="formInline.smsCode" placeholder="请输入短信验证码" />
+            <n-button type="primary" :disabled="time !== 60" @click="sendCodeFunc">
+              {{ time === 60 ? '获取验证码' : `${time}s后重新获取` }}
+            </n-button>
           </n-form-item>
           <n-form-item path="password">
             <n-input
@@ -39,6 +45,15 @@
               </template>
             </n-input>
           </n-form-item>
+          <n-form-item path="captcha" v-if="!isRegister">
+            <n-input v-model:value="formInline.captcha" placeholder="请输入图形验证码" />
+            <n-image
+              :width="98"
+              preview-disabled
+              :src="formInline.captchaPic"
+              @click="getCaptchaFunc"
+            />
+          </n-form-item>
           <n-form-item class="default-color">
             <div class="flex justify-between">
               <div class="flex-initial">
@@ -51,7 +66,7 @@
           </n-form-item>
           <n-form-item>
             <n-button type="primary" @click="handleSubmit" size="large" :loading="loading" block>
-              登录
+              {{ isRegister ? '注册' : '登录' }}
             </n-button>
           </n-form-item>
           <n-form-item class="default-color">
@@ -73,8 +88,8 @@
                   </n-icon>
                 </a>
               </div>
-              <div class="flex-initial" style="margin-left: auto">
-                <a href="javascript:">注册账号</a>
+              <div class="flex-initial" style="margin-left: auto" @click="resetFormInlineFunc">
+                <a href="javascript:">{{ isRegister ? '已有账号，去登陆' : '注册账号' }}</a>
               </div>
             </div>
           </n-form-item>
@@ -93,25 +108,40 @@
   import { PersonOutline, LockClosedOutline, LogoGithub, LogoFacebook } from '@vicons/ionicons5';
   import { PageEnum } from '@/enums/pageEnum';
   import { websiteConfig } from '@/config/website.config';
+  import { sendSmsCode, getCaptcha, registerWithSmsCode } from '@/api/system/user';
   interface FormState {
     username: string;
     password: string;
+    openCaptcha: boolean;
+    captcha: string;
+    captchaId: string;
+  }
+  interface RegisterState {
+    username: string;
+    password: string;
+    smsCode: string;
   }
 
   const formRef = ref();
   const message = useMessage();
   const loading = ref(false);
   const autoLogin = ref(true);
+  const isRegister = ref(false);
+  const time = ref(60);
   const LOGIN_NAME = PageEnum.BASE_LOGIN_NAME;
 
   const formInline = reactive({
-    username: 'admin',
-    password: '123456',
-    isCaptcha: true,
+    username: '',
+    password: '',
+    openCaptcha: true,
+    smsCode: '',
+    captcha: '',
+    captchaId: '',
+    captchaPic: '',
   });
 
   const rules = {
-    username: { required: true, message: '请输入用户名', trigger: 'blur' },
+    username: { required: true, message: '请输入用户名/手机号', trigger: 'blur' },
     password: { required: true, message: '请输入密码', trigger: 'blur' },
   };
 
@@ -120,33 +150,92 @@
   const router = useRouter();
   const route = useRoute();
 
+  const getCaptchaFunc = async () => {
+    const { code, data } = await getCaptcha({});
+    if (code === ResultEnum.SUCCESS) {
+      formInline.captchaPic = data.picPath;
+      formInline.captchaId = data.captchaId;
+      formInline.openCaptcha = data.openCaptcha;
+    }
+  };
+  getCaptchaFunc();
+  const sendCodeFunc = async () => {
+    if (!formInline.username) {
+      message.warning('请输入手机号');
+      return;
+    }
+    // 倒计时
+    const setIntervalFunc = setInterval(() => {
+      time.value--;
+      if (time.value === ResultEnum.SUCCESS) {
+        time.value = 60;
+        clearInterval(setIntervalFunc);
+      }
+    }, 1000);
+    const { code, msg } = await sendSmsCode({ mobile: formInline.username });
+    if (code === 0) {
+      message.success(msg);
+    } else {
+      message.warning(msg);
+    }
+  };
+
+  const resetFormInlineFunc = () => {
+    isRegister.value = !isRegister.value;
+    formInline.captcha = '';
+    formInline.username = '';
+    formInline.password = '';
+    formInline.smsCode = '';
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
     formRef.value.validate(async (errors) => {
       if (!errors) {
-        const { username, password } = formInline;
-        message.loading('登录中...');
         loading.value = true;
-
-        const params: FormState = {
-          username,
-          password,
-        };
-
-        try {
-          const { code, message: msg } = await userStore.login(params);
-          message.destroyAll();
-          if (code == ResultEnum.SUCCESS) {
-            const toPath = decodeURIComponent((route.query?.redirect || '/') as string);
-            message.success('登录成功，即将进入系统');
-            if (route.name === LOGIN_NAME) {
-              router.replace('/');
-            } else router.replace(toPath);
-          } else {
-            message.info(msg || '登录失败');
+        const { username, password, openCaptcha, captcha, captchaId, smsCode } = formInline;
+        if (isRegister.value) {
+          message.loading('注册中...');
+          const params: RegisterState = {
+            username,
+            password,
+            smsCode,
+          };
+          try {
+            const { code, msg } = await registerWithSmsCode(params);
+            message.destroyAll();
+            if (code === ResultEnum.SUCCESS) {
+              message.success(msg || '注册成功');
+            } else {
+              message.info(msg || '注册失败');
+            }
+          } finally {
+            loading.value = false;
           }
-        } finally {
-          loading.value = false;
+        } else {
+          message.loading('登录中...');
+          const params: FormState = {
+            username,
+            password,
+            openCaptcha,
+            captcha,
+            captchaId,
+          };
+
+          try {
+            const { code, msg } = await userStore.login(params);
+            message.destroyAll();
+            if (code == ResultEnum.SUCCESS) {
+              const toPath = decodeURIComponent((route.query?.redirect || '/') as string);
+              message.success('登录成功，即将进入系统');
+              if (route.name === LOGIN_NAME) {
+                await router.replace('/');
+              } else await router.replace(toPath);
+            } else {
+              message.info(msg || '登录失败');
+            }
+          } finally {
+            loading.value = false;
+          }
         }
       } else {
         message.error('请填写完整信息，并且进行验证码校验');

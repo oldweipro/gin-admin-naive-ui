@@ -118,7 +118,7 @@
 
       const { battery, batteryStatus, calcDischargingTime, calcChargingTime } = useBattery();
       const userInfo: UserInfoType = userStore.getUserInfo || {};
-      const username = userInfo['username'] || '';
+      const username = userInfo['userName'] || '';
       const state = reactive({
         showLogin: false,
         loginLoading: false, // 正在登录
@@ -143,12 +143,12 @@
           ...state.loginParams,
         };
         state.loginLoading = true;
-        const { code, message } = await userStore.login(params);
+        const { code, msg } = await userStore.login(params);
         if (code === ResultEnum.SUCCESS) {
           onLockLogin(false);
           useScreenLock.setLock(false);
         } else {
-          state.errorMsg = message;
+          state.errorMsg = msg;
           state.isLoginError = true;
         }
         state.loginLoading = false;

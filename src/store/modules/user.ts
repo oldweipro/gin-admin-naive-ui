@@ -8,7 +8,7 @@ import { storage } from '@/utils/Storage';
 
 export type UserInfoType = {
   // TODO: add your own data
-  name: string;
+  userName: string;
   email: string;
 };
 
@@ -64,36 +64,55 @@ export const useUserStore = defineStore({
     // 登录
     async login(params: any) {
       const response = await login(params);
-      const { result, code } = response;
+      const { data, code } = response;
       if (code === ResultEnum.SUCCESS) {
         const ex = 7 * 24 * 60 * 60;
-        storage.set(ACCESS_TOKEN, result.token, ex);
-        storage.set(CURRENT_USER, result, ex);
+        storage.set(ACCESS_TOKEN, data.token, ex);
+        storage.set(CURRENT_USER, data.user, ex);
         storage.set(IS_SCREENLOCKED, false);
-        this.setToken(result.token);
-        this.setUserInfo(result);
+        this.setToken(data.token);
+        this.setUserInfo(data.user);
       }
       return response;
     },
 
     // 获取用户信息
     async getInfo() {
-      const result = await getUserInfoApi();
-      if (result.permissions && result.permissions.length) {
-        const permissionsList = result.permissions;
-        this.setPermissions(permissionsList);
-        this.setUserInfo(result);
-      } else {
-        throw new Error('getInfo: permissionsList must be a non-null array !');
+      const { code, data } = await getUserInfoApi();
+      if (code === 0) {
+        if (data.userInfo.authorities && data.userInfo.authorities.length) {
+          // TODO oldwei 这个权限是用于v-if hasPermission权限校验用，由于后端做了权限校验，前端咱不需要校验，如果业务需要，请完善此业务代码
+          /**
+           * meta: {
+           *       title: 'Dashboard',
+           *       icon: renderIcon(DashboardOutlined),
+           *       permissions: ['dashboard_console', 'dashboard_console', 'dashboard_workplace'],
+           *       sort: 0,
+           *     },
+           */
+          // const permissionsList = data.userInfo.authorities;
+          // this.setPermissions(permissionsList);
+          this.setUserInfo(data.userInfo);
+        } else {
+          throw new Error('getInfo: permissionsList must be a non-null array !');
+        }
+        this.setAvatar(data.userInfo.headerImg);
       }
-      this.setAvatar(result.avatar);
-      return result;
+      // if (result.permissions && result.permissions.length) {
+      //   const permissionsList = result.permissions;
+      //   this.setPermissions(permissionsList);
+      //   this.setUserInfo(result);
+      // } else {
+      //   throw new Error('getInfo: permissionsList must be a non-null array !');
+      // }
+      // this.setAvatar(result.avatar);
+      return data.userInfo;
     },
 
     // 登出
     async logout() {
       this.setPermissions([]);
-      this.setUserInfo({ name: '', email: '' });
+      this.setUserInfo({ userName: '', email: '' });
       storage.remove(ACCESS_TOKEN);
       storage.remove(CURRENT_USER);
     },

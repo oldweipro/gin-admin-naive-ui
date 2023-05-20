@@ -1,4 +1,9 @@
-import type { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
+import type {
+  AxiosRequestConfig,
+  AxiosInstance,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios';
 
 import axios from 'axios';
 import { AxiosCanceler } from './axiosCancel';
@@ -162,7 +167,7 @@ export class VAxios {
     const axiosCanceler = new AxiosCanceler();
 
     // 请求拦截器配置处理
-    this.axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => {
+    this.axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       const {
         headers: { ignoreCancelToken },
       } = config;
@@ -173,7 +178,7 @@ export class VAxios {
 
       !ignoreCancel && axiosCanceler.addPending(config);
       if (requestInterceptors && isFunction(requestInterceptors)) {
-        config = requestInterceptors(config, this.options);
+        config = requestInterceptors(config, this.options) as InternalAxiosRequestConfig;
       }
       return config;
     }, undefined);

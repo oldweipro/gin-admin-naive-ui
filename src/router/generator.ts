@@ -55,13 +55,13 @@ export const generateRoutes = (routerMap, parent?): any[] => {
  */
 export const generateDynamicRoutes = async (): Promise<RouteRecordRaw[]> => {
   const result = await adminMenus();
-  const router = generateRoutes(result);
+  const router = generateRoutes(result.data);
   asyncImportRoute(router);
   return router;
 };
 
 /**
- * 查找views中对应的组件文件
+ * 查找views中对应的组件文件 revert
  * */
 let viewsModules: Record<string, () => Promise<Recordable>>;
 export const asyncImportRoute = (routes: AppRouteRecordRaw[] | undefined): void => {

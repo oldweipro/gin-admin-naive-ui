@@ -324,7 +324,7 @@
   ];
 
   onMounted(async () => {
-    const data = await getConsoleInfo();
+    const { data } = await getConsoleInfo();
     visits.value = data.visits;
     saleroom.value = data.saleroom;
     orderLarge.value = data.orderLarge;

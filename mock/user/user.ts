@@ -39,7 +39,7 @@ const adminInfo = {
 
 export default [
   {
-    url: '/api/login',
+    url: '/api/base/login',
     timeout: 1000,
     method: 'post',
     response: () => {
@@ -47,7 +47,7 @@ export default [
     },
   },
   {
-    url: '/api/admin_info',
+    url: '/api/user/getUserInfo',
     timeout: 1000,
     method: 'get',
     response: () => {
