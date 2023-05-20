@@ -20,9 +20,14 @@ export function adminMenus() {
  * @param params
  */
 export function getMenuList(params?) {
-  return http.request({
-    url: '/menu/list',
-    method: 'GET',
-    params,
-  });
+  return http.request(
+    {
+      url: '/menu/list',
+      method: 'GET',
+      params,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
 }

@@ -253,10 +253,10 @@
   }
 
   onMounted(async () => {
-    const treeMenuList = await getMenuList();
-    const keys = treeMenuList.list.map((item) => item.key);
+    const { data } = await getMenuList();
+    const keys = data.map((item) => item.key);
     Object.assign(formParams, keys);
-    treeData.value = treeMenuList.list;
+    treeData.value = data;
     loading.value = false;
   });
 
