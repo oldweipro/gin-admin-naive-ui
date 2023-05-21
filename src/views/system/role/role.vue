@@ -137,7 +137,8 @@
       ...unref(params),
       ...res,
     };
-    return await getRoleList(_params);
+    const { data } = await getRoleList();
+    return data;
   };
 
   function onCheckedRow(rowKeys: any[]) {
@@ -202,9 +203,9 @@
   }
 
   onMounted(async () => {
-    const treeMenuList = await getMenuList();
-    expandedKeys.value = treeMenuList.list.map((item) => item.key);
-    treeData.value = treeMenuList.list;
+    const { data } = await getMenuList();
+    expandedKeys.value = data.map((item) => item.key);
+    treeData.value = data;
   });
 </script>
 
