@@ -9,7 +9,7 @@
       <BasicTable
         :columns="columns"
         :request="loadDataTable"
-        :row-key="(row) => row.id"
+        :row-key="(row) => row.authorityId"
         ref="actionRef"
         :actionColumn="actionColumn"
         @update:checked-row-keys="onCheckedRow"
@@ -87,7 +87,7 @@
 
   const params = reactive({
     pageSize: 5,
-    name: 'xiaoMa',
+    name: '',
   });
 
   const actionColumn = reactive({
@@ -137,7 +137,7 @@
       ...unref(params),
       ...res,
     };
-    const { data } = await getRoleList();
+    const { data } = await getRoleList(_params);
     return data;
   };
 

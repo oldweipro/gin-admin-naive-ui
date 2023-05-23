@@ -4,11 +4,11 @@ import { NTag } from 'naive-ui';
 export const columns = [
   {
     title: 'id',
-    key: 'id',
+    key: 'authorityId',
   },
   {
     title: '角色名称',
-    key: 'name',
+    key: 'authorityName',
   },
   {
     title: '说明',
@@ -31,6 +31,6 @@ export const columns = [
   },
   {
     title: '创建时间',
-    key: 'create_date',
+    key: 'CreatedAt',
   },
 ];
