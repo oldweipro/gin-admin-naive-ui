@@ -232,6 +232,7 @@
               } else await router.replace(toPath);
             } else {
               message.info(msg || '登录失败');
+              await getCaptchaFunc();
             }
           } finally {
             loading.value = false;

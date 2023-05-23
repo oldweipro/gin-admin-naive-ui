@@ -80,32 +80,16 @@ export const useUserStore = defineStore({
     async getInfo() {
       const { code, data } = await getUserInfoApi();
       if (code === 0) {
-        if (data.userInfo.authorities && data.userInfo.authorities.length) {
-          // TODO oldwei 这个权限是用于v-if hasPermission权限校验用，由于后端做了权限校验，前端咱不需要校验，如果业务需要，请完善此业务代码
-          /**
-           * meta: {
-           *       title: 'Dashboard',
-           *       icon: renderIcon(DashboardOutlined),
-           *       permissions: ['dashboard_console', 'dashboard_console', 'dashboard_workplace'],
-           *       sort: 0,
-           *     },
-           */
-          // const permissionsList = data.userInfo.authorities;
-          // this.setPermissions(permissionsList);
-          this.setUserInfo(data.userInfo);
+        if (data.userInfo.user.authorities && data.userInfo.user.authorities.length) {
+          // 用于v-if hasPermission权限校验用
+          const permissionsList = data.userInfo.permissions;
+          this.setPermissions(permissionsList);
+          this.setUserInfo(data.userInfo.user);
         } else {
           throw new Error('getInfo: permissionsList must be a non-null array !');
         }
-        this.setAvatar(data.userInfo.headerImg);
+        this.setAvatar(data.userInfo.user.headerImg);
       }
-      // if (result.permissions && result.permissions.length) {
-      //   const permissionsList = result.permissions;
-      //   this.setPermissions(permissionsList);
-      //   this.setUserInfo(result);
-      // } else {
-      //   throw new Error('getInfo: permissionsList must be a non-null array !');
-      // }
-      // this.setAvatar(result.avatar);
       return data.userInfo;
     },
 
