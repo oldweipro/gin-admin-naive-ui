@@ -4,8 +4,8 @@
   import TextComponent from '@/views/chat/message/TextComponent.vue';
   import AvatarComponent from '@/views/chat/message/Avatar.vue';
   import SvgIcon from '@/components/SvgIcon/index.vue';
-  import { useBasicLayout } from '@/hooks/useBasicLayout';
-  import { useIconRender } from '@/hooks/useIconRender';
+  import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
+  import { useIconRender } from '@/hooks/chat/useIconRender';
   import { copyToClip } from '@/utils/copy';
 
   interface Props {

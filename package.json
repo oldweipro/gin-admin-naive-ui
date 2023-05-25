@@ -28,6 +28,8 @@
     "test prod gzip": "http-server dist --cors --gzip -c-1"
   },
   "dependencies": {
+    "@iconify/vue": "^4.1.1",
+    "@traptitech/markdown-it-katex": "^3.6.0",
     "@vicons/antd": "^0.12.0",
     "@vicons/ionicons5": "^0.12.0",
     "@vueup/vue-quill": "^1.0.0",
@@ -37,8 +39,11 @@
     "date-fns": "^2.29.3",
     "echarts": "^5.4.0",
     "element-resize-detector": "^1.2.4",
+    "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
+    "markdown-it": "^13.0.1",
+    "markdown-it-link-attributes": "^4.0.1",
     "mitt": "^3.0.0",
     "mockjs": "^1.1.0",
     "naive-ui": "^2.34.2",

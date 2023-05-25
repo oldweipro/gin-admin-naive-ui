@@ -4,7 +4,7 @@
   import mdKatex from '@traptitech/markdown-it-katex';
   import mila from 'markdown-it-link-attributes';
   import hljs from 'highlight.js';
-  import { useBasicLayout } from '@/hooks/useBasicLayout';
+  import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
   import { copyToClip } from '@/utils/copy';
 
   interface Props {
