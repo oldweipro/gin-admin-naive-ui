@@ -26,7 +26,6 @@
             style="height: calc(100vh - 154px)"
           >
             <div class="flex flex-col w-full h-full">
-              <HeaderComponent v-if="isMobile" @export="handleExport" />
               <main class="flex-1 overflow-hidden">
                 <div id="scrollRef" ref="scrollRef" class="h-full overflow-hidden overflow-y-auto">
                   <div
@@ -121,11 +120,10 @@
   import html2canvas from 'html2canvas';
   import { useScroll } from '@/hooks/chat/useScroll';
   import { useChat } from '@/hooks/chat/useChat';
-  import HeaderComponent from './components/Header/index.vue';
   import HoverButton from '@/components/HoverButton/index.vue';
   import SvgIcon from '@/components/SvgIcon/index.vue';
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
-  // import { useChatStore } from '@/store';
+  import { useChatStore } from '@/hooks/chat';
   import { getCurrentUserConversationList } from '@/api/chat/chat';
   import Message from '@/views/chat/message/message.vue';
   import { BookOutline as BookIcon } from '@vicons/ionicons5';
@@ -154,8 +152,8 @@
   const dialog = useDialog();
   const ms = useMessage();
 
-  const chatStore = null;
-
+  const chatStore = useChatStore();
+  chatStore.loadData();
   const { isMobile } = useBasicLayout();
   const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat();
   const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll();

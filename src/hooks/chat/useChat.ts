@@ -1,4 +1,4 @@
-import { useChatStore } from '@/store';
+import { useChatStore } from './index';
 
 export function useChat() {
   const chatStore = useChatStore();
