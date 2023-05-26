@@ -9,7 +9,7 @@
           :collapsed-width="64"
           :width="240"
           :native-scrollbar="false"
-          style="height: calc(100vh - 124px)"
+          style="max-height: 100vh"
         >
           <n-menu
             :collapsed-width="64"
@@ -23,7 +23,7 @@
             ref="contentRef"
             content-style="padding: 24px;"
             :native-scrollbar="false"
-            style="height: calc(100vh - 154px)"
+            style="height: 100vh"
           >
             <div class="flex flex-col w-full h-full">
               <main class="flex-1 overflow-hidden">
@@ -67,46 +67,48 @@
                   </div>
                 </div>
               </main>
-              <footer :class="footerClass">
-                <div class="w-full max-w-screen-xl m-auto">
-                  <div class="flex items-center justify-between space-x-2">
-                    <HoverButton @click="handleClear">
-                      <span class="text-xl text-[#4f555e] dark:text-white">
-                        <SvgIcon icon="ri:delete-bin-line" />
-                      </span>
-                    </HoverButton>
-                    <HoverButton v-if="!isMobile" @click="handleExport">
-                      <span class="text-xl text-[#4f555e] dark:text-white">
-                        <SvgIcon icon="ri:download-2-line" />
-                      </span>
-                    </HoverButton>
-                    <NAutoComplete v-model:value="prompt">
-                      <template #default="{ handleInput, handleBlur, handleFocus }">
-                        <NInput
-                          ref="inputRef"
-                          v-model:value="prompt"
-                          type="textarea"
-                          :placeholder="placeholder"
-                          :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }"
-                          @input="handleInput"
-                          @focus="handleFocus"
-                          @blur="handleBlur"
-                          @keypress="handleEnter"
-                        />
-                      </template>
-                    </NAutoComplete>
-                    <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
-                      <template #icon>
-                        <span class="dark:text-black">
-                          <SvgIcon icon="ri:send-plane-fill" />
-                        </span>
-                      </template>
-                    </NButton>
-                  </div>
-                </div>
-              </footer>
             </div>
           </n-layout-content>
+          <n-layout-footer bordered>
+            <footer :class="footerClass">
+              <div class="w-full max-w-screen-xl m-auto">
+                <div class="flex items-center justify-between space-x-2">
+                  <HoverButton @click="handleClear">
+                    <span class="text-xl text-[#4f555e] dark:text-white">
+                      <SvgIcon icon="ri:delete-bin-line" />
+                    </span>
+                  </HoverButton>
+                  <HoverButton v-if="!isMobile" @click="handleExport">
+                    <span class="text-xl text-[#4f555e] dark:text-white">
+                      <SvgIcon icon="ri:download-2-line" />
+                    </span>
+                  </HoverButton>
+                  <NAutoComplete v-model:value="prompt">
+                    <template #default="{ handleInput, handleBlur, handleFocus }">
+                      <NInput
+                        ref="inputRef"
+                        v-model:value="prompt"
+                        type="textarea"
+                        :placeholder="placeholder"
+                        :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }"
+                        @input="handleInput"
+                        @focus="handleFocus"
+                        @blur="handleBlur"
+                        @keypress="handleEnter"
+                      />
+                    </template>
+                  </NAutoComplete>
+                  <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
+                    <template #icon>
+                      <span class="dark:text-black">
+                        <SvgIcon icon="ri:send-plane-fill" />
+                      </span>
+                    </template>
+                  </NButton>
+                </div>
+              </div>
+            </footer>
+          </n-layout-footer>
         </n-layout>
       </n-layout>
     </n-layout>

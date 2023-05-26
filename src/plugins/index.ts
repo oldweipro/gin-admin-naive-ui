@@ -3,3 +3,6 @@ export { setupNaiveDiscreteApi } from '@/plugins/naiveDiscreteApi';
 export { setupDirectives } from '@/plugins/directives';
 export { setupCustomComponents } from '@/plugins/customComponents';
 export { setupGlobalMethods } from '@/plugins/globalMethods';
+import setupAssets from '@/plugins/assets';
+
+export { setupAssets };
