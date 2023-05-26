@@ -1,5 +1,5 @@
 <template>
-  <n-space vertical>
+  <n-space vertical size="large">
     <n-layout>
       <n-layout has-sider>
         <n-layout-sider
@@ -9,7 +9,7 @@
           :collapsed-width="64"
           :width="240"
           :native-scrollbar="false"
-          style="max-height: 100vh"
+          style="height: calc(100vh - 192px)"
         >
           <n-menu
             :collapsed-width="64"
@@ -23,7 +23,7 @@
             ref="contentRef"
             content-style="padding: 24px;"
             :native-scrollbar="false"
-            style="height: 100vh"
+            style="height: calc(100vh - 192px)"
           >
             <div class="flex flex-col w-full h-full">
               <main class="flex-1 overflow-hidden">
@@ -126,10 +126,20 @@
   import SvgIcon from '@/components/SvgIcon/index.vue';
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
   import { useChatStore } from '@/hooks/chat';
-  import { getCurrentUserConversationList } from '@/api/chat/chat';
+  import { chatCompletions, getCurrentUserConversationList } from '@/api/chat/chat';
   import Message from '@/views/chat/message/message.vue';
   import { BookOutline as BookIcon } from '@vicons/ionicons5';
 
+  let controller = new AbortController();
+
+  const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true';
+
+  const dialog = useDialog();
+  const ms = useMessage();
+
+  const { isMobile } = useBasicLayout();
+  const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat();
+  const { scrollRef, contentRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll();
   function renderIcon(icon: Component) {
     return () => h(NIcon, null, { default: () => h(icon) });
   }
@@ -138,6 +148,8 @@
     console.log(key);
     console.log(item);
   };
+  const chatStore = useChatStore();
+  chatStore.loadData();
   const loadData = async () => {
     const { data } = await getCurrentUserConversationList();
     data.chatList.forEach((element) => {
@@ -147,21 +159,9 @@
   };
   loadData();
 
-  let controller = new AbortController();
-
-  const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true';
-
-  const dialog = useDialog();
-  const ms = useMessage();
-
-  const chatStore = useChatStore();
-  chatStore.loadData();
-  const { isMobile } = useBasicLayout();
-  const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat();
-  const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll();
-
   const dataSources = computed(() => {
     // 获取当前聊天窗口的数据
+    scrollToBottom();
     return chatStore.getChatByUuid();
   });
   // console.log(dataSources.value)
@@ -200,7 +200,7 @@
       inversion: true,
       error: false,
     });
-    scrollToBottom();
+    await scrollToBottom();
 
     loading.value = true;
     prompt.value = '';
@@ -213,13 +213,13 @@
       inversion: false,
       error: false,
     });
-    scrollToBottom();
+    await scrollToBottom();
 
     try {
       // 定义接口
       const fetchChatAPIOnce = async () => {
         // console.log('发起请求时的会话ID: ', chatStore.active!)
-        await getCurrentUserConversationList<Chat.ConversationResponse>({
+        await chatCompletions({
           prompt: message,
           conversationId: chatStore.active!,
           signal: controller.signal,
@@ -325,7 +325,7 @@
       let textLength = 1;
       const dateTimeStr = new Date().toLocaleString();
       const fetchChatAPIOnce = async () => {
-        await getCurrentUserConversationList<Chat.ConversationResponse>({
+        await chatCompletions({
           prompt: 'message',
           conversationId: chatStore.active as number,
           // options,
@@ -503,7 +503,6 @@
   });
 
   onMounted(() => {
-    scrollToBottom();
     if (inputRef.value && !isMobile.value) {
       inputRef.value?.focus();
     }

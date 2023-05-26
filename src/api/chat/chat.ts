@@ -1,4 +1,6 @@
 import { http } from '@/utils/http/axios';
+import type { AxiosProgressEvent, GenericAbortSignal } from 'axios';
+import { MD5 } from 'crypto-js';
 
 /**
  * @description: 获取当前用户聊天记录
@@ -8,6 +10,36 @@ export function getCurrentUserConversationList() {
     {
       url: '/conversation/getCurrentUserConversationList',
       method: 'GET',
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
+/**
+ * @description: AI对话接口
+ */
+export function chatCompletions(params: {
+  prompt: string;
+  conversationId: number;
+  signal?: GenericAbortSignal;
+  onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void;
+}) {
+  const str = `${params.prompt}-${params.conversationId}5eb63bbbe01eeed093cb22bb8f5acdc3`;
+  const encryptedStr = MD5(str).toString();
+  const data: Record<string, any> = {
+    prompt: params.prompt,
+    conversationId: params.conversationId,
+    sign: encryptedStr,
+  };
+  return http.request(
+    {
+      url: '/conversation/chatCompletions',
+      method: 'POST',
+      data,
+      timeout: 1000 * 60 * 30,
+      signal: params.signal,
+      onDownloadProgress: params.onDownloadProgress,
     },
     {
       isTransformResponse: false,
