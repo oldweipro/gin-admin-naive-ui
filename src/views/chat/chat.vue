@@ -1,116 +1,94 @@
 <template>
   <n-space vertical size="large">
     <n-layout>
-      <n-layout has-sider>
-        <n-layout-sider
-          bordered
-          show-trigger
-          collapse-mode="width"
-          :collapsed-width="64"
-          :width="240"
-          :native-scrollbar="false"
-          style="height: calc(100vh - 192px)"
-        >
-          <n-menu
-            :collapsed-width="64"
-            :collapsed-icon-size="22"
-            :options="menuOptions"
-            @update:value="formSubmit"
-          />
-        </n-layout-sider>
-        <n-layout>
-          <n-layout-content
-            ref="contentRef"
-            content-style="padding: 24px;"
-            :native-scrollbar="false"
-            style="height: calc(100vh - 192px)"
-          >
-            <div class="flex flex-col w-full h-full">
-              <main class="flex-1 overflow-hidden">
-                <div id="scrollRef" ref="scrollRef" class="h-full overflow-hidden overflow-y-auto">
-                  <div
-                    id="image-wrapper"
-                    class="w-full max-w-screen-xl m-auto"
-                    :class="[isMobile ? 'p-2' : 'p-4']"
-                  >
-                    <template v-if="!dataSources.length">
-                      <div
-                        class="flex items-center justify-center mt-4 text-center text-neutral-300"
-                      >
-                        <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-                        <span>Aha~</span>
-                      </div>
-                    </template>
-                    <template v-else>
-                      <div>
-                        <message
-                          v-for="(item, index) of dataSources"
-                          :key="index"
-                          :date-time="item.dateTime"
-                          :text="item.text"
-                          :inversion="item.inversion"
-                          :error="item.error"
-                          :loading="item.loading"
-                          @regenerate="onRegenerate(index)"
-                          @delete="handleDelete(index)"
-                        />
-                        <div class="sticky bottom-0 left-0 flex justify-center">
-                          <NButton v-if="loading" type="warning" @click="handleStop">
-                            <template #icon>
-                              <SvgIcon icon="ri:stop-circle-line" />
-                            </template>
-                            Stop Responding
-                          </NButton>
-                        </div>
-                      </div>
-                    </template>
+      <n-layout-content
+        ref="contentRef"
+        content-style="padding: 24px;"
+        :native-scrollbar="false"
+        style="height: calc(100vh - 192px)"
+      >
+        <div class="flex flex-col w-full h-full">
+          <main class="flex-1 overflow-hidden">
+            <div id="scrollRef" ref="scrollRef" class="h-full overflow-hidden overflow-y-auto">
+              <div
+                id="image-wrapper"
+                class="w-full max-w-screen-xl m-auto"
+                :class="[isMobile ? 'p-2' : 'p-4']"
+              >
+                <template v-if="!dataSources.length">
+                  <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
+                    <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
+                    <span>Aha~</span>
                   </div>
-                </div>
-              </main>
-            </div>
-          </n-layout-content>
-          <n-layout-footer bordered>
-            <footer :class="footerClass">
-              <div class="w-full max-w-screen-xl m-auto">
-                <div class="flex items-center justify-between space-x-2">
-                  <HoverButton @click="handleClear">
-                    <span class="text-xl text-[#4f555e] dark:text-white">
-                      <SvgIcon icon="ri:delete-bin-line" />
-                    </span>
-                  </HoverButton>
-                  <HoverButton v-if="!isMobile" @click="handleExport">
-                    <span class="text-xl text-[#4f555e] dark:text-white">
-                      <SvgIcon icon="ri:download-2-line" />
-                    </span>
-                  </HoverButton>
-                  <NAutoComplete v-model:value="prompt">
-                    <template #default="{ handleInput, handleBlur, handleFocus }">
-                      <NInput
-                        ref="inputRef"
-                        v-model:value="prompt"
-                        type="textarea"
-                        :placeholder="placeholder"
-                        :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }"
-                        @input="handleInput"
-                        @focus="handleFocus"
-                        @blur="handleBlur"
-                        @keypress="handleEnter"
-                      />
-                    </template>
-                  </NAutoComplete>
-                  <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
-                    <template #icon>
-                      <span class="dark:text-black">
-                        <SvgIcon icon="ri:send-plane-fill" />
-                      </span>
-                    </template>
-                  </NButton>
-                </div>
+                </template>
+                <template v-else>
+                  <div>
+                    <message
+                      v-for="(item, index) of dataSources"
+                      :key="index"
+                      :date-time="item.dateTime"
+                      :text="item.text"
+                      :inversion="item.inversion"
+                      :error="item.error"
+                      :loading="item.loading"
+                      @regenerate="onRegenerate(index)"
+                      @delete="handleDelete(index)"
+                    />
+                    <div class="sticky bottom-0 left-0 flex justify-center">
+                      <NButton v-if="loading" type="warning" @click="handleStop">
+                        <template #icon>
+                          <SvgIcon icon="ri:stop-circle-line" />
+                        </template>
+                        Stop Responding
+                      </NButton>
+                    </div>
+                  </div>
+                </template>
               </div>
-            </footer>
-          </n-layout-footer>
-        </n-layout>
-      </n-layout>
+            </div>
+          </main>
+        </div>
+      </n-layout-content>
+      <n-layout-footer bordered>
+        <footer :class="footerClass">
+          <div class="w-full max-w-screen-xl m-auto">
+            <div class="flex items-center justify-between space-x-2">
+              <HoverButton @click="handleClear">
+                <span class="text-xl text-[#4f555e] dark:text-white">
+                  <SvgIcon icon="ri:delete-bin-line" />
+                </span>
+              </HoverButton>
+              <HoverButton v-if="!isMobile" @click="handleExport">
+                <span class="text-xl text-[#4f555e] dark:text-white">
+                  <SvgIcon icon="ri:download-2-line" />
+                </span>
+              </HoverButton>
+              <NAutoComplete v-model:value="prompt">
+                <template #default="{ handleInput, handleBlur, handleFocus }">
+                  <NInput
+                    ref="inputRef"
+                    v-model:value="prompt"
+                    type="textarea"
+                    :placeholder="placeholder"
+                    :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }"
+                    @input="handleInput"
+                    @focus="handleFocus"
+                    @blur="handleBlur"
+                    @keypress="handleEnter"
+                  />
+                </template>
+              </NAutoComplete>
+              <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
+                <template #icon>
+                  <span class="dark:text-black">
+                    <SvgIcon icon="ri:send-plane-fill" />
+                  </span>
+                </template>
+              </NButton>
+            </div>
+          </div>
+        </footer>
+      </n-layout-footer>
     </n-layout>
   </n-space>
 </template>
@@ -485,9 +463,9 @@
 
   const placeholder = computed(() => {
     if (isMobile.value) {
-      return '提示手机号？';
+      return '请输入您的问题';
     }
-    return '提示';
+    return '请输入您的问题';
   });
 
   const buttonDisabled = computed(() => {

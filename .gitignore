@@ -2,7 +2,7 @@
 node_modules
 /screenshots
 /dist
-dist.zip
+*.zip
 dist_electron
 
 # local env files

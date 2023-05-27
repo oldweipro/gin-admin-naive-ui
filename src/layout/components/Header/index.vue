@@ -76,6 +76,7 @@
         class="layout-header-trigger layout-header-trigger-min"
         v-for="item in iconList"
         :key="item.icon"
+        v-show="false"
       >
         <n-tooltip placement="bottom">
           <template #trigger>
@@ -87,7 +88,7 @@
         </n-tooltip>
       </div>
       <!--切换全屏-->
-      <div class="layout-header-trigger layout-header-trigger-min">
+      <div class="layout-header-trigger layout-header-trigger-min" v-show="false">
         <n-tooltip placement="bottom">
           <template #trigger>
             <n-icon size="18">
@@ -111,7 +112,11 @@
         </n-dropdown>
       </div>
       <!--设置-->
-      <div class="layout-header-trigger layout-header-trigger-min" @click="openSetting">
+      <div
+        class="layout-header-trigger layout-header-trigger-min"
+        @click="openSetting"
+        v-show="false"
+      >
         <n-tooltip placement="bottom-end">
           <template #trigger>
             <n-icon size="18" style="font-weight: bold">
@@ -156,14 +161,15 @@
       const useLockscreen = useScreenLockStore();
       const message = useMessage();
       const dialog = useDialog();
-      const { navMode, navTheme, headerSetting, menuSetting, crumbsSetting } = useProjectSetting();
+      const { navMode, navTheme, headerSetting, menuSetting, crumbsSetting, isMobile } =
+        useProjectSetting();
 
-      const { name } = userStore?.info || {};
+      const { userName } = userStore?.info || {};
 
       const drawerSetting = ref();
 
       const state = reactive({
-        username: name ?? '',
+        username: userName ?? '',
         fullscreenIcon: 'FullscreenOutlined',
         navMode,
         navTheme,
@@ -296,10 +302,10 @@
         },
       ];
       const avatarOptions = [
-        {
-          label: '个人设置',
-          key: 1,
-        },
+        // {
+        //   label: '个人设置',
+        //   key: 1,
+        // },
         {
           label: '退出登录',
           key: 2,
@@ -325,6 +331,7 @@
 
       return {
         ...toRefs(state),
+        isMobile,
         iconList,
         toggleFullScreen,
         doLogout,

@@ -59,7 +59,7 @@
               <div class="flex-initial">
                 <n-checkbox v-model:checked="autoLogin">自动登录</n-checkbox>
               </div>
-              <div class="flex-initial order-last">
+              <div class="flex-initial order-last" v-show="false">
                 <a href="javascript:">忘记密码</a>
               </div>
             </div>
@@ -71,17 +71,17 @@
           </n-form-item>
           <n-form-item class="default-color">
             <div class="flex view-account-other">
-              <div class="flex-initial">
+              <div class="flex-initial" v-show="false">
                 <span>其它登录方式</span>
               </div>
-              <div class="flex-initial mx-2">
+              <div class="flex-initial mx-2" v-show="false">
                 <a href="javascript:">
                   <n-icon size="24" color="#2d8cf0">
                     <LogoGithub />
                   </n-icon>
                 </a>
               </div>
-              <div class="flex-initial mx-2">
+              <div class="flex-initial mx-2" v-show="false">
                 <a href="javascript:">
                   <n-icon size="24" color="#2d8cf0">
                     <LogoFacebook />

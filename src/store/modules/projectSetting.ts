@@ -30,6 +30,7 @@ interface ProjectSettingState {
   isMobile: boolean; // 是否处于移动端模式
 }
 
+// TODO 设置布局与主题等
 export const useProjectSettingStore = defineStore({
   id: 'app-project-setting',
   state: (): ProjectSettingState => ({

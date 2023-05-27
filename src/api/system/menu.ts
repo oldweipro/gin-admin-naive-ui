@@ -3,11 +3,11 @@ import { http } from '@/utils/http/axios';
 /**
  * @description: 根据用户id获取用户菜单
  */
-export function adminMenus() {
+export function getMenu() {
   return http.request(
     {
-      url: '/menu/getMenus',
-      method: 'GET',
+      url: '/menu/getMenu',
+      method: 'POST',
     },
     {
       isTransformResponse: false,
