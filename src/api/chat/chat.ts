@@ -64,6 +64,22 @@ export function updateConversation(data) {
 }
 
 /**
+ * @description: 创建聊天室
+ */
+export function createConversation(data) {
+  return http.request(
+    {
+      url: '/conversation/createConversation',
+      method: 'POST',
+      data,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
+
+/**
  * @description: 删除对话
  */
 export function deleteConversation(data) {

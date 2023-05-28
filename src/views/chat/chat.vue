@@ -95,8 +95,8 @@
 
 <script lang="ts" setup>
   import type { Ref } from 'vue';
-  import { computed, Component, h, onMounted, onUnmounted, ref } from 'vue';
-  import { NIcon, useDialog, useMessage } from 'naive-ui';
+  import { computed, onMounted, onUnmounted, ref } from 'vue';
+  import { useDialog, useMessage } from 'naive-ui';
   import html2canvas from 'html2canvas';
   import { useScroll } from '@/hooks/chat/useScroll';
   import { useChat } from '@/hooks/chat/useChat';
@@ -104,9 +104,8 @@
   import SvgIcon from '@/components/SvgIcon/index.vue';
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
   import { useChatStore } from '@/hooks/chat';
-  import { chatCompletions, getCurrentUserConversationList } from '@/api/chat/chat';
+  import { chatCompletions, createConversation } from '@/api/chat/chat';
   import Message from '@/views/chat/message/message.vue';
-  import { BookOutline as BookIcon } from '@vicons/ionicons5';
 
   let controller = new AbortController();
 
@@ -118,24 +117,8 @@
   const { isMobile } = useBasicLayout();
   const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat();
   const { scrollRef, contentRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll();
-  function renderIcon(icon: Component) {
-    return () => h(NIcon, null, { default: () => h(icon) });
-  }
-  const menuOptions = ref([]);
-  const formSubmit = (key, item) => {
-    console.log(key);
-    console.log(item);
-  };
   const chatStore = useChatStore();
   chatStore.loadData();
-  const loadData = async () => {
-    const { data } = await getCurrentUserConversationList();
-    data.chatList.forEach((element) => {
-      element.icon = renderIcon(BookIcon);
-    });
-    menuOptions.value = data.chatList;
-  };
-  loadData();
 
   const dataSources = computed(() => {
     // 获取当前聊天窗口的数据
@@ -166,6 +149,11 @@
     }
 
     if (!message || message.trim() === '') {
+      return;
+    }
+
+    if (message.length > 500) {
+      ms.warning('不能超出1000字符');
       return;
     }
 
@@ -301,7 +289,6 @@
     try {
       let lastText = '';
       let textLength = 1;
-      const dateTimeStr = new Date().toLocaleString();
       const fetchChatAPIOnce = async () => {
         await chatCompletions({
           prompt: 'message',
@@ -428,14 +415,18 @@
     if (loading.value) {
       return;
     }
-
     dialog.warning({
       title: '清除聊天',
       content: '确认清除聊天',
       positiveText: '是',
       negativeText: '否',
-      onPositiveClick: () => {
+      onPositiveClick: async () => {
         chatStore.clearChatByUuid(chatStore.active!);
+        // 创建新的聊天
+        await createConversation({
+          conversationName: '新聊天',
+        });
+        await chatStore.loadData();
       },
     });
   }
