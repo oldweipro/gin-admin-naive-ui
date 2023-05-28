@@ -4,7 +4,7 @@
     <div class="view-account-container">
       <div class="view-account-top">
         <div class="view-account-top-logo">
-          <img :src="websiteConfig.loginImage" alt="" />
+          <h5 style="font-size: 4em">ChatGPT</h5>
         </div>
         <div class="view-account-top-desc">{{ websiteConfig.loginDesc }}</div>
       </div>
@@ -25,6 +25,20 @@
               </template>
             </n-input>
           </n-form-item>
+          <n-form-item path="password">
+            <n-input
+              v-model:value="formInline.password"
+              type="password"
+              showPasswordOn="click"
+              placeholder="请输入密码"
+            >
+              <template #prefix>
+                <n-icon size="18" color="#808695">
+                  <LockClosedOutline />
+                </n-icon>
+              </template>
+            </n-input>
+          </n-form-item>
           <n-form-item path="captcha" v-if="isLogin">
             <n-input v-model:value="formInline.captcha" placeholder="请输入图形验证码" />
             <n-image
@@ -39,20 +53,6 @@
             <n-button type="primary" :disabled="time !== 60" @click="sendCodeFunc">
               {{ time === 60 ? '获取验证码' : `${time}s后重新获取` }}
             </n-button>
-          </n-form-item>
-          <n-form-item path="password">
-            <n-input
-              v-model:value="formInline.password"
-              type="password"
-              showPasswordOn="click"
-              placeholder="请输入密码"
-            >
-              <template #prefix>
-                <n-icon size="18" color="#808695">
-                  <LockClosedOutline />
-                </n-icon>
-              </template>
-            </n-input>
           </n-form-item>
           <n-form-item class="default-color">
             <div class="flex justify-between">
