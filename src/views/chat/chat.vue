@@ -5,7 +5,7 @@
         ref="contentRef"
         content-style="padding: 24px;"
         :native-scrollbar="false"
-        style="height: calc(100vh - 192px)"
+        style="height: calc(100vh - 175px)"
       >
         <div class="flex flex-col w-full h-full">
           <main class="flex-1 overflow-hidden">
