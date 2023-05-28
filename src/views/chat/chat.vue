@@ -54,12 +54,12 @@
           <div class="w-full max-w-screen-xl m-auto">
             <div class="flex items-center justify-between space-x-2">
               <HoverButton @click="handleClear">
-                <span class="text-xl text-[#4f555e] dark:text-white">
+                <span class="text-xl text-[#4f555e]">
                   <SvgIcon icon="ri:delete-bin-line" />
                 </span>
               </HoverButton>
               <HoverButton v-if="!isMobile" @click="handleExport">
-                <span class="text-xl text-[#4f555e] dark:text-white">
+                <span class="text-xl text-[#4f555e]">
                   <SvgIcon icon="ri:download-2-line" />
                 </span>
               </HoverButton>

@@ -24,7 +24,7 @@
     />
     <NAvatar v-else round :src="defaultAvatar" />
   </template>
-  <span v-else class="text-[28px] dark:text-white">
+  <span v-else class="text-[28px]">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 32 32"
