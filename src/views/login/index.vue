@@ -31,6 +31,7 @@
               type="password"
               showPasswordOn="click"
               placeholder="请输入密码"
+              maxlength="36"
             >
               <template #prefix>
                 <n-icon size="18" color="#808695">
@@ -49,7 +50,11 @@
             />
           </n-form-item>
           <n-form-item path="smsCode" v-else-if="isRegister || isForgot">
-            <n-input v-model:value="formInline.smsCode" placeholder="请输入短信验证码" />
+            <n-input
+              v-model:value="formInline.smsCode"
+              placeholder="请输入短信验证码"
+              maxlength="6"
+            />
             <n-button type="primary" :disabled="time !== 60" @click="sendCodeFunc">
               {{ time === 60 ? '获取验证码' : `${time}s后重新获取` }}
             </n-button>
@@ -270,6 +275,9 @@
             message.destroyAll();
             if (code === ResultEnum.SUCCESS) {
               message.success(msg || '注册成功');
+              isLogin.value = true;
+              isRegister.value = false;
+              isForgot.value = false;
             } else {
               message.info(msg || '注册失败');
             }
@@ -287,6 +295,9 @@
             message.destroyAll();
             if (code === ResultEnum.SUCCESS) {
               message.success(msg || '重置成功');
+              isLogin.value = true;
+              isRegister.value = false;
+              isForgot.value = false;
             } else {
               message.info(msg || '重置失败');
             }

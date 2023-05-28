@@ -17,5 +17,5 @@
 </script>
 
 <template>
-  <Icon :icon="icon" v-bind="bindAttrs" />
+  <Icon :icon="icon!" v-bind="bindAttrs" />
 </template>
