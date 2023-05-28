@@ -19,16 +19,14 @@ export function useScroll(): ScrollReturn {
   const scrollToBottom = async () => {
     await nextTick();
     if (contentRef.value && scrollRef.value) {
-      scrollRef.value.scrollTop = scrollRef.value.scrollHeight;
-      contentRef.value.scrollTo({ top: scrollRef.value.scrollHeight, behavior: 'smooth' });
+      contentRef.value.scrollTo({ top: scrollRef.value.scrollHeight });
     }
   };
 
   const scrollToTop = async () => {
     await nextTick();
     if (contentRef.value && scrollRef.value) {
-      scrollRef.value.scrollTop = 0;
-      contentRef.value.scrollTo({ top: 0, behavior: 'smooth' });
+      contentRef.value.scrollTo({ top: 0 });
     }
   };
 
@@ -39,8 +37,7 @@ export function useScroll(): ScrollReturn {
       const distanceToBottom =
         scrollRef.value.scrollHeight - scrollRef.value.scrollTop - scrollRef.value.clientHeight;
       if (distanceToBottom <= threshold) {
-        scrollRef.value.scrollTop = scrollRef.value.scrollHeight;
-        contentRef.value.scrollTo({ top: scrollRef.value.scrollHeight, behavior: 'smooth' });
+        contentRef.value.scrollTo({ top: scrollRef.value.scrollHeight });
       }
     }
   };
