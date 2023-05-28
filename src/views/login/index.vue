@@ -149,6 +149,7 @@
                     isLogin = true;
                     isRegister = false;
                     isForgot = false;
+                    getCaptchaFunc();
                   "
                   >已有账号，去登陆</a
                 >
@@ -278,6 +279,7 @@
               isLogin.value = true;
               isRegister.value = false;
               isForgot.value = false;
+              await getCaptchaFunc();
             } else {
               message.info(msg || '注册失败');
             }
@@ -298,6 +300,7 @@
               isLogin.value = true;
               isRegister.value = false;
               isForgot.value = false;
+              await getCaptchaFunc();
             } else {
               message.info(msg || '重置失败');
             }
