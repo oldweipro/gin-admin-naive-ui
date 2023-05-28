@@ -25,7 +25,16 @@
               </template>
             </n-input>
           </n-form-item>
-          <n-form-item path="smsCode" v-if="isRegister">
+          <n-form-item path="captcha" v-if="isLogin">
+            <n-input v-model:value="formInline.captcha" placeholder="请输入图形验证码" />
+            <n-image
+              :width="98"
+              preview-disabled
+              :src="formInline.captchaPic"
+              @click="getCaptchaFunc"
+            />
+          </n-form-item>
+          <n-form-item path="smsCode" v-else-if="isRegister || isForgot">
             <n-input v-model:value="formInline.smsCode" placeholder="请输入短信验证码" />
             <n-button type="primary" :disabled="time !== 60" @click="sendCodeFunc">
               {{ time === 60 ? '获取验证码' : `${time}s后重新获取` }}
@@ -45,28 +54,67 @@
               </template>
             </n-input>
           </n-form-item>
-          <n-form-item path="captcha" v-if="!isRegister">
-            <n-input v-model:value="formInline.captcha" placeholder="请输入图形验证码" />
-            <n-image
-              :width="98"
-              preview-disabled
-              :src="formInline.captchaPic"
-              @click="getCaptchaFunc"
-            />
-          </n-form-item>
           <n-form-item class="default-color">
             <div class="flex justify-between">
-              <div class="flex-initial">
+              <div class="flex-initial" v-show="false">
                 <n-checkbox v-model:checked="autoLogin">自动登录</n-checkbox>
               </div>
-              <div class="flex-initial order-last" v-show="false">
-                <a href="javascript:">忘记密码</a>
+              <div class="flex-initial order-last">
+                <a
+                  href="javascript:"
+                  @click="
+                    isLogin = false;
+                    isRegister = false;
+                    isForgot = true;
+                    formInline.captcha = '';
+                    formInline.smsCode = '';
+                  "
+                  >忘记密码</a
+                >&nbsp;&nbsp;&nbsp;&nbsp;
+                <a
+                  href="javascript:"
+                  @click="
+                    isLogin = false;
+                    isRegister = true;
+                    isForgot = false;
+                    formInline.captcha = '';
+                    formInline.smsCode = '';
+                  "
+                  >注册账号</a
+                >
               </div>
             </div>
           </n-form-item>
           <n-form-item>
-            <n-button type="primary" @click="handleSubmit" size="large" :loading="loading" block>
-              {{ isRegister ? '注册' : '登录' }}
+            <n-button
+              v-if="isLogin"
+              type="primary"
+              @click="handleSubmit"
+              size="large"
+              :loading="loading"
+              block
+            >
+              登录
+            </n-button>
+            <n-button
+              v-else-if="isRegister"
+              type="primary"
+              @click="handleSubmit"
+              size="large"
+              :loading="loading"
+              block
+            >
+              注册
+            </n-button>
+            <n-button
+              v-else-if="isForgot"
+              type="primary"
+              @click="handleSubmit"
+              size="large"
+              :loading="loading"
+              block
+            >
+              重置密码
             </n-button>
           </n-form-item>
           <n-form-item class="default-color">
@@ -88,8 +136,17 @@
                   </n-icon>
                 </a>
               </div>
-              <div class="flex-initial" style="margin-left: auto" @click="resetFormInlineFunc">
-                <a href="javascript:">{{ isRegister ? '已有账号，去登陆' : '注册账号' }}</a>
+              <div class="flex-initial" style="margin-left: auto">
+                <a
+                  v-if="!isLogin"
+                  href="javascript:"
+                  @click="
+                    isLogin = true;
+                    isRegister = false;
+                    isForgot = false;
+                  "
+                  >已有账号，去登陆</a
+                >
               </div>
             </div>
           </n-form-item>
@@ -108,7 +165,12 @@
   import { PersonOutline, LockClosedOutline, LogoGithub, LogoFacebook } from '@vicons/ionicons5';
   import { PageEnum } from '@/enums/pageEnum';
   import { websiteConfig } from '@/config/website.config';
-  import { sendSmsCode, getCaptcha, registerWithSmsCode } from '@/api/system/user';
+  import {
+    forgotPasswordWithSmsCode,
+    sendSmsCode,
+    getCaptcha,
+    registerWithSmsCode,
+  } from '@/api/system/user';
   interface FormState {
     username: string;
     password: string;
@@ -121,12 +183,22 @@
     password: string;
     smsCode: string;
   }
+  interface ForgotPasswordState {
+    phone: string;
+    password: string;
+    smsCode: string;
+  }
 
   const formRef = ref();
   const message = useMessage();
   const loading = ref(false);
   const autoLogin = ref(true);
+  // 显示注册模块的标志
   const isRegister = ref(false);
+  // 显示登录模块的标志
+  const isLogin = ref(true);
+  // 显示找回密码模块的标志
+  const isForgot = ref(false);
   const time = ref(60);
   const LOGIN_NAME = PageEnum.BASE_LOGIN_NAME;
 
@@ -180,13 +252,6 @@
     }
   };
 
-  const resetFormInlineFunc = () => {
-    isRegister.value = !isRegister.value;
-    formInline.captcha = '';
-    formInline.username = '';
-    formInline.password = '';
-    formInline.smsCode = '';
-  };
   const handleSubmit = (e) => {
     e.preventDefault();
     formRef.value.validate(async (errors) => {
@@ -211,7 +276,24 @@
           } finally {
             loading.value = false;
           }
-        } else {
+        } else if (isForgot.value) {
+          const params: ForgotPasswordState = {
+            phone: username,
+            password,
+            smsCode,
+          };
+          try {
+            const { code, msg } = await forgotPasswordWithSmsCode(params);
+            message.destroyAll();
+            if (code === ResultEnum.SUCCESS) {
+              message.success(msg || '重置成功');
+            } else {
+              message.info(msg || '重置失败');
+            }
+          } finally {
+            loading.value = false;
+          }
+        } else if (isLogin.value) {
           message.loading('登录中...');
           const params: FormState = {
             username,

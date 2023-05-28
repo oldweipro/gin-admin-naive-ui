@@ -76,6 +76,22 @@ export function registerWithSmsCode(params) {
 }
 
 /**
+ * @description: 忘记密码
+ */
+export function forgotPasswordWithSmsCode(params) {
+  return http.request<BasicResponseModel>(
+    {
+      url: '/base/forgotPasswordWithSmsCode',
+      method: 'POST',
+      params,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
+
+/**
  * @description: 获取图形验证码
  */
 export function getCaptcha(params) {
