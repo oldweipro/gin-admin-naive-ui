@@ -359,7 +359,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0;
-    height: 64px;
+    height: 52px;
     box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
     transition: all 0.2s ease-in-out;
     width: 100%;

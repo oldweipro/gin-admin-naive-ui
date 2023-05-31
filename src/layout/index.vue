@@ -52,7 +52,6 @@
             :class="{
               'main-view-fix': fixedMulti,
               noMultiTabs: !isMultiTabs,
-              'mt-3': !isMultiTabs,
             }"
           >
             <MainView />

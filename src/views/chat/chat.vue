@@ -3,9 +3,8 @@
     <n-layout>
       <n-layout-content
         ref="contentRef"
-        content-style="padding: 24px;"
         :native-scrollbar="false"
-        style="height: calc(100vh - 175px)"
+        style="height: calc(100vh - 132px)"
       >
         <div class="flex flex-col w-full h-full">
           <main class="flex-1 overflow-hidden">
@@ -50,7 +49,7 @@
         </div>
       </n-layout-content>
       <n-layout-footer bordered>
-        <footer :class="footerClass">
+        <footer :class="footerClass" style="padding: 8px">
           <div class="w-full max-w-screen-xl m-auto">
             <div class="flex items-center justify-between space-x-2">
               <HoverButton @click="handleClear">
