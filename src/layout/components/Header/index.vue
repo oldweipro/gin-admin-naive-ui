@@ -98,6 +98,16 @@
           <span>全屏</span>
         </n-tooltip>
       </div>
+      <div class="layout-header-trigger layout-header-trigger-min" v-show="true">
+        <n-tooltip placement="bottom">
+          <template #trigger>
+            <n-icon size="18">
+              <component :is="walletOutlined" @click="showModal = true" />
+            </n-icon>
+          </template>
+          <span>钱包</span>
+        </n-tooltip>
+      </div>
       <!-- 个人中心 -->
       <div class="layout-header-trigger layout-header-trigger-min">
         <n-dropdown trigger="hover" @select="avatarSelect" :options="avatarOptions">
@@ -130,13 +140,41 @@
   </div>
   <!--项目配置-->
   <ProjectSetting ref="drawerSetting" />
+  <n-modal
+    v-model:show="showModal"
+    class="custom-card"
+    preset="card"
+    label-placement="center"
+    :style="bodyStyle"
+    title="钱包"
+    size="huge"
+    :bordered="false"
+    :segmented="segmented"
+    aria-modal="true"
+    role="dialog"
+  >
+    <template #header-extra>
+      <a>鱼币: {{ fishCoin }} 枚</a>
+    </template>
+    <n-form ref="formRef" inline :label-width="80" :model="formValue" :rules="rules" size="medium">
+      <n-form-item label="兑换鱼币" path="chatTicket">
+        <n-input v-model:value="formValue.chatTicket" placeholder="输入鱼币兑换码" />
+      </n-form-item>
+      <n-form-item>
+        <n-button attr-type="button" @click="recharge">验证</n-button>
+      </n-form-item>
+    </n-form>
+    <template #footer>
+      <a></a>
+    </template>
+  </n-modal>
 </template>
 
 <script lang="ts">
   import { defineComponent, reactive, toRefs, ref, computed, unref } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import components from './components';
-  import { NDialogProvider, useDialog, useMessage } from 'naive-ui';
+  import { NDialogProvider, FormInst, useDialog, useMessage } from 'naive-ui';
   import { TABS_ROUTES } from '@/store/mutation-types';
   import { useUserStore } from '@/store/modules/user';
   import { useScreenLockStore } from '@/store/modules/screenLock';
@@ -144,6 +182,7 @@
   import { AsideMenu } from '@/layout/components/Menu';
   import { useProjectSetting } from '@/hooks/setting/useProjectSetting';
   import { websiteConfig } from '@/config/website.config';
+  import { getCurrentUserWallets, handleValidateChatTicket } from '@/api/transaction/transaction';
 
   export default defineComponent({
     name: 'PageHeader',
@@ -166,11 +205,31 @@
 
       const { userName } = userStore?.info || {};
 
+      const formRef = ref<FormInst | null>(null);
       const drawerSetting = ref();
-
+      const fishCoin = ref('0');
+      const wallets = async () => {
+        const { code, data } = await getCurrentUserWallets();
+        if (code === 0) {
+          fishCoin.value = data.balance;
+        }
+      };
+      wallets();
+      const showModal = ref(false);
+      const formValue = ref({
+        chatTicket: '',
+      });
+      const rules = {
+        chatTicket: {
+          required: true,
+          message: '请输入鱼币兑换码',
+          trigger: ['input'],
+        },
+      };
       const state = reactive({
         username: userName ?? '',
         fullscreenIcon: 'FullscreenOutlined',
+        walletOutlined: 'WalletOutlined',
         navMode,
         navTheme,
         headerSetting,
@@ -182,6 +241,15 @@
           ? props.inverted
           : !props.inverted;
       });
+
+      const bodyStyle = {
+        width: '400px',
+      };
+
+      const segmented = {
+        content: 'soft',
+        footer: 'soft',
+      } as const;
 
       const mixMenu = computed(() => {
         return unref(menuSetting).mixMenu;
@@ -279,6 +347,25 @@
           }
         }
       };
+      const recharge = async (e: MouseEvent) => {
+        e.preventDefault();
+        formRef.value?.validate(async (errors) => {
+          if (errors) {
+            message.error('请输入鱼币兑换码');
+            return;
+          }
+          // 向后端发起验证
+          const { code } = await handleValidateChatTicket({
+            chatTicket: formValue.value.chatTicket,
+          });
+          if (code === 0) {
+            const { code, data } = await getCurrentUserWallets();
+            if (code === 0) {
+              fishCoin.value = data.balance;
+            }
+          }
+        });
+      };
 
       // 图标列表
       const iconList = [
@@ -334,6 +421,7 @@
         isMobile,
         iconList,
         toggleFullScreen,
+        recharge,
         doLogout,
         route,
         dropdownSelect,
@@ -348,6 +436,13 @@
         getMenuLocation,
         mixMenu,
         websiteConfig,
+        showModal,
+        bodyStyle,
+        segmented,
+        formRef,
+        formValue,
+        rules,
+        fishCoin,
       };
     },
   });
