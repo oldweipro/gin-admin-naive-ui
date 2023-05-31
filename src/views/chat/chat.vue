@@ -3,6 +3,7 @@
     <n-layout>
       <n-layout-content
         ref="contentRef"
+        content-style="padding: 8px;"
         :native-scrollbar="false"
         style="height: calc(100vh - 132px)"
       >
