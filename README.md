@@ -11,13 +11,16 @@
 
 
 ## 预览
-- [gin-admin-naive-ui](https://oldweipro.github.io)
 
-账号：admin，密码：123456（随意）
+目前主要实现ChatGPT的聊天主页
+
+- [gin-admin-naive-ui](https://chat.oldwei.com)
+
+无演示账号，请使用手机号注册预览
 
 ## 文档
 
-[文档地址](https://oldweipro.github.io/docs)
+[文档地址](https://oldweipro.github.io)
 
 ## 准备
 
@@ -35,15 +38,15 @@
 - 获取项目代码
 
 ```bash
-git clone https://github.com/jekip/naive-ui-admin.git
+git clone https://github.com/oldweipro/gin-admin-naive-ui.git
 ```
 
 - 安装依赖
 
 ```bash
-cd naive-ui-admin
+cd gin-admin-naive-ui
 
-yarn install
+yarn
 
 ```
 
