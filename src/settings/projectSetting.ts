@@ -1,6 +1,6 @@
 const setting = {
   //导航模式 vertical 左侧菜单模式 horizontal 顶部菜单模式
-  navMode: 'horizontal',
+  navMode: 'vertical',
   //导航风格 dark 暗色侧边栏 light 白色侧边栏 header-dark 暗色顶栏
   navTheme: 'light',
   // 是否处于移动端模式

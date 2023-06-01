@@ -53,6 +53,7 @@
             <n-input
               v-model:value="formInline.smsCode"
               placeholder="请输入短信验证码"
+              type="number"
               maxlength="6"
             />
             <n-button type="primary" :disabled="time !== 60" @click="sendCodeFunc">
