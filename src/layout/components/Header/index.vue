@@ -356,7 +356,7 @@
           }
           // 向后端发起验证
           const { code } = await handleValidateChatTicket({
-            chatTicket: formValue.value.chatTicket,
+            ticketValue: formValue.value.chatTicket,
           });
           if (code === 0) {
             const { code, data } = await getCurrentUserWallets();
