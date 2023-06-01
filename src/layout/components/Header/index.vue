@@ -359,9 +359,11 @@
             ticketValue: formValue.value.chatTicket,
           });
           if (code === 0) {
-            const { code, data } = await getCurrentUserWallets();
+            const { code, data, msg } = await getCurrentUserWallets();
             if (code === 0) {
               fishCoin.value = data.balance;
+            } else {
+              message.error(msg);
             }
           }
         });
