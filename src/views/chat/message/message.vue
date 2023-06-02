@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue';
   import { useMessage } from 'naive-ui';
-  import TextComponent from '@/views/chat/openai/message/TextComponent.vue';
-  import AvatarComponent from '@/views/chat/openai/message/Avatar.vue';
+  import TextComponent from '@/views/chat/message/TextComponent.vue';
+  import AvatarComponent from '@/views/chat/message/Avatar.vue';
   import SvgIcon from '@/components/SvgIcon/index.vue';
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
   import { useIconRender } from '@/hooks/chat/useIconRender';

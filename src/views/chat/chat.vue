@@ -52,6 +52,20 @@
       <n-layout-footer bordered>
         <footer :class="footerClass" style="padding: 8px">
           <div class="w-full max-w-screen-xl m-auto">
+            <n-space item-style="display: flex; align-item: center;">
+              <n-select
+                v-model:value="selectedModel"
+                filterable
+                placeholder="选择模型"
+                :options="models"
+              />
+              <n-select
+                v-model:value="selectedPrompt"
+                filterable
+                placeholder="选择prompt"
+                :options="prompts"
+              />
+            </n-space>
             <div class="flex items-center justify-between space-x-2">
               <HoverButton @click="handleClear">
                 <span class="text-xl text-[#4f555e]">
@@ -105,7 +119,7 @@
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
   import { useChatStore } from '@/hooks/chat';
   import { chatCompletions, createConversation } from '@/api/chat/chat';
-  import Message from '@/views/chat/openai/message/message.vue';
+  import Message from '@/views/chat/message/message.vue';
 
   let controller = new AbortController();
 
@@ -130,6 +144,48 @@
   const loading = ref<boolean>(false);
   const inputRef = ref<Ref | null>(null);
 
+  // 模型选择======================
+  const selectedModel = ref('');
+
+  const models = ref([
+    {
+      value: 'ChatGPT',
+      label: 'OpenAI',
+    },
+    {
+      value: '通义千问',
+      label: '阿里云',
+    },
+    {
+      value: '星火模型',
+      label: '科大讯飞',
+    },
+    {
+      value: 'Bard',
+      label: 'Google',
+    },
+  ]);
+  const handleChange = () => {
+    console.log(selectedModel.value);
+  };
+  // 模型选择======================
+
+  // 选择prompt
+  const selectedPrompt = ref('');
+  const prompts = ref([
+    {
+      label: '翻译',
+      value: 'translation',
+    },
+    {
+      label: '小红书文案',
+      value: 'xhsCopyWriting',
+    },
+    {
+      label: '微信公众号文案',
+      value: 'wxCopyWriting',
+    },
+  ]);
   // 未知原因刷新页面，loading 状态不会重置，手动重置
   dataSources.value.forEach((item, index) => {
     if (item.loading) {
@@ -194,8 +250,7 @@
             const { responseText } = event.target;
             if (responseText.includes('"code":')) {
               // TODO 应该把返回的消息显示出来
-              const msg = JSON.parse(responseText).msg;
-              lastText = msg;
+              lastText = JSON.parse(responseText).msg;
               return;
             }
             // 处理AI回答
@@ -235,7 +290,7 @@
         updateChatSome(chatStore.active!, dataSources.value.length - 1, {
           loading: false,
         });
-        scrollToBottomIfAtBottom();
+        await scrollToBottomIfAtBottom();
         return;
       }
 
@@ -257,7 +312,7 @@
         error: true,
         loading: false,
       });
-      scrollToBottomIfAtBottom();
+      await scrollToBottomIfAtBottom();
       // TODO 这是处理错误的 结束========================
     } finally {
       loading.value = false;
