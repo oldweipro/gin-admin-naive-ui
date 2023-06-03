@@ -52,20 +52,6 @@
       <n-layout-footer bordered>
         <footer :class="footerClass" style="padding: 8px">
           <div class="w-full max-w-screen-xl m-auto">
-            <n-space item-style="display: flex; align-item: center;">
-              <n-select
-                v-model:value="selectedModel"
-                filterable
-                placeholder="选择模型"
-                :options="models"
-              />
-              <n-select
-                v-model:value="selectedPrompt"
-                filterable
-                placeholder="选择prompt"
-                :options="prompts"
-              />
-            </n-space>
             <div class="flex items-center justify-between space-x-2">
               <HoverButton @click="handleClear">
                 <span class="text-xl text-[#4f555e]">
@@ -119,7 +105,7 @@
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
   import { useChatStore } from '@/hooks/chat';
   import { chatCompletions, createConversation } from '@/api/chat/chat';
-  import Message from '@/views/chat/message/message.vue';
+  import Message from '@/views/ai/chat/message/message.vue';
 
   let controller = new AbortController();
 
@@ -143,32 +129,6 @@
   const prompt = ref<string>('');
   const loading = ref<boolean>(false);
   const inputRef = ref<Ref | null>(null);
-
-  // 模型选择======================
-  const selectedModel = ref('');
-
-  const models = ref([
-    {
-      value: 'ChatGPT',
-      label: 'OpenAI',
-    },
-    {
-      value: '通义千问',
-      label: '阿里云',
-    },
-    {
-      value: '星火模型',
-      label: '科大讯飞',
-    },
-    {
-      value: 'Bard',
-      label: 'Google',
-    },
-  ]);
-  const handleChange = () => {
-    console.log(selectedModel.value);
-  };
-  // 模型选择======================
 
   // 选择prompt
   const selectedPrompt = ref('');
