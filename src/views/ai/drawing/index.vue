@@ -104,7 +104,7 @@
   import SvgIcon from '@/components/SvgIcon/index.vue';
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
   import { useChatStore } from '@/hooks/chat';
-  import { chatCompletions, createConversation } from '@/api/chat/chat';
+  import { openAIDrawing, createConversation } from '@/api/ai/chat';
   import Message from '@/views/ai/drawing/message/message.vue';
 
   let controller = new AbortController();
@@ -118,7 +118,7 @@
   const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat();
   const { scrollRef, contentRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll();
   const chatStore = useChatStore();
-  chatStore.loadData();
+  chatStore.loadData({ conversationType: 1 });
 
   const dataSources = computed(() => {
     // 获取当前聊天窗口的数据
@@ -201,7 +201,7 @@
       // 定义接口
       const fetchChatAPIOnce = async () => {
         // console.log('发起请求时的会话ID: ', chatStore.active!)
-        await chatCompletions({
+        await openAIDrawing({
           prompt: message,
           conversationId: chatStore.active!,
           signal: controller.signal,
@@ -305,7 +305,7 @@
       let lastText = '';
       let textLength = 1;
       const fetchChatAPIOnce = async () => {
-        await chatCompletions({
+        await openAIDrawing({
           prompt: 'message',
           conversationId: chatStore.active as number,
           // options,
@@ -389,7 +389,7 @@
           const tempLink = document.createElement('a');
           tempLink.style.display = 'none';
           tempLink.href = imgUrl;
-          tempLink.setAttribute('download', 'chat-shot.png');
+          tempLink.setAttribute('download', 'ai-shot.png');
           if (typeof tempLink.download === 'undefined') {
             tempLink.setAttribute('target', '_blank');
           }
@@ -440,8 +440,9 @@
         // 创建新的聊天
         await createConversation({
           conversationName: '新聊天',
+          conversationType: 1,
         });
-        await chatStore.loadData();
+        await chatStore.loadData({ conversationType: 1 });
       },
     });
   }

@@ -104,7 +104,7 @@
   import SvgIcon from '@/components/SvgIcon/index.vue';
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
   import { useChatStore } from '@/hooks/chat';
-  import { chatCompletions, createConversation } from '@/api/chat/chat';
+  import { chatCompletions, createConversation } from '@/api/ai/chat';
   import Message from '@/views/ai/chat/message/message.vue';
 
   let controller = new AbortController();
@@ -118,7 +118,7 @@
   const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat();
   const { scrollRef, contentRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll();
   const chatStore = useChatStore();
-  chatStore.loadData();
+  chatStore.loadData({ conversationType: 0 });
 
   const dataSources = computed(() => {
     // 获取当前聊天窗口的数据
@@ -389,7 +389,7 @@
           const tempLink = document.createElement('a');
           tempLink.style.display = 'none';
           tempLink.href = imgUrl;
-          tempLink.setAttribute('download', 'chat-shot.png');
+          tempLink.setAttribute('download', 'ai-shot.png');
           if (typeof tempLink.download === 'undefined') {
             tempLink.setAttribute('target', '_blank');
           }
@@ -440,8 +440,9 @@
         // 创建新的聊天
         await createConversation({
           conversationName: '新聊天',
+          conversationType: 0,
         });
-        await chatStore.loadData();
+        await chatStore.loadData({ conversationType: 0 });
       },
     });
   }

@@ -5,10 +5,10 @@ import { MD5 } from 'crypto-js';
 /**
  * @description: 获取当前用户聊天记录
  */
-export function getCurrentUserConversationList() {
+export function getCurrentUserConversationList(params) {
   return http.request(
     {
-      url: '/conversation/getCurrentUserConversationList',
+      url: `/conversation/getCurrentUserConversationList?conversationType=${params.conversationType}`,
       method: 'GET',
     },
     {
@@ -35,6 +35,36 @@ export function chatCompletions(params: {
   return http.request(
     {
       url: '/conversation/chatCompletions',
+      method: 'POST',
+      data,
+      timeout: 1000 * 60 * 30,
+      signal: params.signal,
+      onDownloadProgress: params.onDownloadProgress,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
+/**
+ * @description: AI作图
+ */
+export function openAIDrawing(params: {
+  prompt: string;
+  conversationId: number;
+  signal?: GenericAbortSignal;
+  onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void;
+}) {
+  const str = `${params.prompt}-${params.conversationId}5eb63bbbe01eeed093cb22bb8f5acdc3`;
+  const encryptedStr = MD5(str).toString();
+  const data: Record<string, any> = {
+    prompt: params.prompt,
+    conversationId: params.conversationId,
+    sign: encryptedStr,
+  };
+  return http.request(
+    {
+      url: '/conversation/openAIDrawing',
       method: 'POST',
       data,
       timeout: 1000 * 60 * 30,

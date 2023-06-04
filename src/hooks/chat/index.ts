@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { getCurrentUserConversationList, updateConversation } from '@/api/chat/chat';
-export const useChatStore = defineStore('chat-store', {
+import { getCurrentUserConversationList, updateConversation } from '@/api/ai/chat';
+export const useChatStore = defineStore('ai-store', {
   // 现在改造成从接口读取
   state: (): Chat.ChatState =>
     <Chat.ChatState>{
@@ -27,8 +27,8 @@ export const useChatStore = defineStore('chat-store', {
   },
 
   actions: {
-    async loadData() {
-      const chatState = await getCurrentUserConversationList();
+    async loadData(params) {
+      const chatState = await getCurrentUserConversationList(params);
       if (chatState.code === 0) {
         this.active = chatState.data.active;
         this.chat = chatState.data.chat;
@@ -62,14 +62,14 @@ export const useChatStore = defineStore('chat-store', {
         this.chat[index].data.push(chat);
         // TODO 下面注释的代码是应该对一下后端接口，修改聊天室名字
         // if (this.history[index].title === '新聊天')
-        //   this.history[index].title = chat.text
+        //   this.history[index].title = ai.text
       }
     },
 
     updateChatByUuid(uuid: number, index: number, chat: Chat.Chat) {
       if (!uuid || uuid === 0) {
-        // if (this.chat.length) {
-        //   this.chat[0].data[index] = chat
+        // if (this.ai.length) {
+        //   this.ai[0].data[index] = ai
         // }
         console.log('【更新】这说明没有会话,uuid为0');
         return;
