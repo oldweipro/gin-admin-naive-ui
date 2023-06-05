@@ -168,11 +168,6 @@
       return;
     }
 
-    if (message.length > 500) {
-      ms.warning('不能超出1000字符');
-      return;
-    }
-
     controller = new AbortController();
 
     // 用户输入的聊天
