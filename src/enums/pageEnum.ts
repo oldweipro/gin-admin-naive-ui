@@ -9,7 +9,7 @@ export enum PageEnum {
   // 首页
   BASE_HOME = '/ai',
   //首页跳转默认路由
-  BASE_HOME_REDIRECT = '/ai/chat',
+  BASE_HOME_REDIRECT = '/ai/openai',
   // 错误
   ERROR_PAGE_NAME = 'ErrorPage',
 }
