@@ -30,3 +30,18 @@ export function handleValidateChatTicket(data) {
     }
   );
 }
+
+/**
+ * @description: 验证兑换码
+ */
+export function checkInApi() {
+  return http.request(
+    {
+      url: '/chatTicket/checkIn',
+      method: 'POST',
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}

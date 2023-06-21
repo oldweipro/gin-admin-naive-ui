@@ -13,6 +13,8 @@ import {
   UserOutlined,
   CheckOutlined,
   WalletOutlined,
+  CheckSquareOutlined,
+  PayCircleOutlined,
 } from '@vicons/antd';
 
 export default {
@@ -30,4 +32,6 @@ export default {
   UserOutlined,
   CheckOutlined,
   WalletOutlined,
+  CheckSquareOutlined,
+  PayCircleOutlined,
 };

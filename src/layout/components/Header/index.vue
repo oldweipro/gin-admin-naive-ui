@@ -102,10 +102,20 @@
         <n-tooltip placement="bottom">
           <template #trigger>
             <n-icon size="18">
+              <component :is="checkSquareOutlined" @click="checkIn" />
+            </n-icon>
+          </template>
+          <span>签到</span>
+        </n-tooltip>
+      </div>
+      <div class="layout-header-trigger layout-header-trigger-min" v-show="true">
+        <n-tooltip placement="bottom">
+          <template #trigger>
+            <n-icon size="18">
               <component :is="walletOutlined" @click="showModal = true" />
             </n-icon>
           </template>
-          <span>钱包</span>
+          <span>钱包 {{ fishCoin }} 枚</span>
         </n-tooltip>
       </div>
       <!-- 个人中心 -->
@@ -156,6 +166,8 @@
     <template #header-extra>
       <a>鱼币: {{ fishCoin }} 枚</a>
     </template>
+    <n-button secondary strong :render-icon="renderIcon" @click="checkIn">签到 +1 鱼币 </n-button>
+    <n-divider />
     <n-form ref="formRef" inline :label-width="80" :model="formValue" :rules="rules" size="medium">
       <n-form-item label="兑换鱼币" path="chatTicket">
         <n-input v-model:value="formValue.chatTicket" placeholder="输入鱼币兑换码" />
@@ -171,10 +183,10 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, reactive, toRefs, ref, computed, unref } from 'vue';
+  import { defineComponent, reactive, toRefs, ref, computed, unref, h } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import components from './components';
-  import { NDialogProvider, FormInst, useDialog, useMessage } from 'naive-ui';
+  import { NDialogProvider, FormInst, useDialog, useMessage, NIcon } from 'naive-ui';
   import { TABS_ROUTES } from '@/store/mutation-types';
   import { useUserStore } from '@/store/modules/user';
   import { useScreenLockStore } from '@/store/modules/screenLock';
@@ -182,7 +194,12 @@
   import { AsideMenu } from '@/layout/components/Menu';
   import { useProjectSetting } from '@/hooks/setting/useProjectSetting';
   import { websiteConfig } from '@/config/website.config';
-  import { getCurrentUserWallets, handleValidateChatTicket } from '@/api/transaction/transaction';
+  import { CashOutline as CashIcon } from '@vicons/ionicons5';
+  import {
+    getCurrentUserWallets,
+    handleValidateChatTicket,
+    checkInApi,
+  } from '@/api/transaction/transaction';
 
   export default defineComponent({
     name: 'PageHeader',
@@ -208,6 +225,21 @@
       const formRef = ref<FormInst | null>(null);
       const drawerSetting = ref();
       const fishCoin = ref('0');
+
+      const renderIcon = () => {
+        return h(NIcon, null, {
+          default: () => h(CashIcon),
+        });
+      };
+      // 签到
+      const checkIn = async () => {
+        const { code, msg } = await checkInApi();
+        if (code === 0) {
+          await wallets();
+        }
+        message.info(msg);
+      };
+
       const wallets = async () => {
         const { code, data } = await getCurrentUserWallets();
         if (code === 0) {
@@ -230,6 +262,7 @@
         username: userName ?? '',
         fullscreenIcon: 'FullscreenOutlined',
         walletOutlined: 'WalletOutlined',
+        checkSquareOutlined: 'CheckSquareOutlined',
         navMode,
         navTheme,
         headerSetting,
@@ -446,6 +479,8 @@
         formValue,
         rules,
         fishCoin,
+        checkIn,
+        renderIcon,
       };
     },
   });
