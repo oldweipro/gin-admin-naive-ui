@@ -122,12 +122,11 @@
       <div class="layout-header-trigger layout-header-trigger-min">
         <n-dropdown trigger="hover" @select="avatarSelect" :options="avatarOptions">
           <div class="avatar">
-            <n-avatar round>
-              {{ username }}
-              <template #icon>
-                <UserOutlined />
-              </template>
-            </n-avatar>
+            <n-avatar
+              round
+              :src="userInfo.headerImg"
+              fallback-src="https://cdn.pixabay.com/animation/2023/05/15/09/24/09-24-42-868_512.gif"
+            />
           </div>
         </n-dropdown>
       </div>
@@ -150,6 +149,7 @@
   </div>
   <!--项目配置-->
   <ProjectSetting ref="drawerSetting" />
+  <!-- 钱包信息 -->
   <n-modal
     v-model:show="showModal"
     class="custom-card"
@@ -180,6 +180,29 @@
       <a></a>
     </template>
   </n-modal>
+  <!-- 个人中心 -->
+  <n-modal
+    v-model:show="showProfileModal"
+    class="custom-card"
+    preset="card"
+    label-placement="center"
+    :style="bodyStyle"
+    title="个人中心"
+    size="huge"
+    :bordered="false"
+    :segmented="segmented"
+    aria-modal="true"
+    role="dialog"
+  >
+    <n-form ref="formRef" inline :label-width="80" :model="formValue" :rules="rules" size="medium">
+      <n-form-item label="修改头像" path="chatTicket">
+        <n-input v-model:value="formValue.chatTicket" placeholder="输入鱼币兑换码" />
+      </n-form-item>
+    </n-form>
+    <template #footer>
+      <a></a>
+    </template>
+  </n-modal>
 </template>
 
 <script lang="ts">
@@ -188,7 +211,7 @@
   import components from './components';
   import { NDialogProvider, FormInst, useDialog, useMessage, NIcon } from 'naive-ui';
   import { TABS_ROUTES } from '@/store/mutation-types';
-  import { useUserStore } from '@/store/modules/user';
+  import { UserInfoType, useUserStore } from '@/store/modules/user';
   import { useScreenLockStore } from '@/store/modules/screenLock';
   import ProjectSetting from './ProjectSetting.vue';
   import { AsideMenu } from '@/layout/components/Menu';
@@ -220,8 +243,7 @@
       const { navMode, navTheme, headerSetting, menuSetting, crumbsSetting, isMobile } =
         useProjectSetting();
 
-      const { userName } = userStore?.info || {};
-
+      const userInfo = ref<UserInfoType>(userStore.info);
       const formRef = ref<FormInst | null>(null);
       const drawerSetting = ref();
       const fishCoin = ref('0');
@@ -248,6 +270,7 @@
       };
       wallets();
       const showModal = ref(false);
+      const showProfileModal = ref(false);
       const formValue = ref({
         chatTicket: '',
       });
@@ -259,7 +282,6 @@
         },
       };
       const state = reactive({
-        username: userName ?? '',
         fullscreenIcon: 'FullscreenOutlined',
         walletOutlined: 'WalletOutlined',
         checkSquareOutlined: 'CheckSquareOutlined',
@@ -425,10 +447,10 @@
         },
       ];
       const avatarOptions = [
-        // {
-        //   label: '个人设置',
-        //   key: 1,
-        // },
+        {
+          label: '个人设置',
+          key: 1,
+        },
         {
           label: '退出登录',
           key: 2,
@@ -439,7 +461,7 @@
       const avatarSelect = (key) => {
         switch (key) {
           case 1:
-            router.push({ name: 'Setting' });
+            showProfileModal.value = true;
             break;
           case 2:
             doLogout();
@@ -473,12 +495,14 @@
         mixMenu,
         websiteConfig,
         showModal,
+        showProfileModal,
         bodyStyle,
         segmented,
         formRef,
         formValue,
         rules,
         fishCoin,
+        userInfo,
         checkIn,
         renderIcon,
       };

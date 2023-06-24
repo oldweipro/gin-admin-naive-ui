@@ -10,7 +10,7 @@ export type UserInfoType = {
   // TODO: add your own data
   userName: string;
   email: string;
-  avatar: string;
+  headerImg: string;
 };
 
 export interface IUserState {
@@ -97,7 +97,7 @@ export const useUserStore = defineStore({
     // 登出
     async logout() {
       this.setPermissions([]);
-      this.setUserInfo({ userName: '', email: '', avatar: '' });
+      this.setUserInfo({ userName: '', email: '', headerImg: '' });
       storage.remove(ACCESS_TOKEN);
       storage.remove(CURRENT_USER);
     },
