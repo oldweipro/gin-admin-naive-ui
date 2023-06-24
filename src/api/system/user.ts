@@ -133,3 +133,19 @@ export function logout(params) {
     params,
   });
 }
+
+/**
+ * @description: 设置用户信息
+ */
+export function setSelfInfo(data) {
+  return http.request(
+    {
+      url: '/user/setSelfInfo',
+      method: 'PUT',
+      data,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}

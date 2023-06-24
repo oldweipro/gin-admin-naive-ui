@@ -194,11 +194,32 @@
     aria-modal="true"
     role="dialog"
   >
-    <n-form ref="formRef" inline :label-width="80" :model="formValue" :rules="rules" size="medium">
-      <n-form-item label="修改头像" path="chatTicket">
-        <n-input v-model:value="formValue.chatTicket" placeholder="输入鱼币兑换码" />
-      </n-form-item>
-    </n-form>
+    <div>
+      <input ref="input" type="file" name="image" accept="image/*" @change="setImage" />
+
+      <div class="content">
+        <section class="cropper-area">
+          <div class="img-cropper">
+            <vue-cropper ref="cropper" :aspect-ratio="16 / 16" :src="imgSrc" preview=".preview" />
+          </div>
+          <div class="actions">
+            <a href="#" role="button" @click.prevent="cropImage">裁剪</a>
+            <a href="#" role="button" @click.prevent="reset"> 重置 </a>
+            <a href="#" role="button" @click.prevent="showFileChooser"> 选择文件 </a>
+            <a href="#" role="button" @click.prevent="submitAvatar"> 上传头像 </a>
+          </div>
+        </section>
+        <section class="preview-area">
+          <p>预览</p>
+          <div class="preview"></div>
+          <p>裁剪图片</p>
+          <div class="cropped-image">
+            <img v-if="cropImg" :src="cropImg" alt="裁剪图片" />
+            <div v-else class="crop-placeholder"></div>
+          </div>
+        </section>
+      </div>
+    </div>
     <template #footer>
       <a></a>
     </template>
@@ -218,15 +239,24 @@
   import { useProjectSetting } from '@/hooks/setting/useProjectSetting';
   import { websiteConfig } from '@/config/website.config';
   import { CashOutline as CashIcon } from '@vicons/ionicons5';
+  import VueCropper from 'vue-cropperjs';
+  import 'cropperjs/dist/cropper.css';
   import {
     getCurrentUserWallets,
     handleValidateChatTicket,
     checkInApi,
   } from '@/api/transaction/transaction';
+  import { setSelfInfo } from '@/api/system/user';
 
   export default defineComponent({
     name: 'PageHeader',
-    components: { ...components, NDialogProvider, ProjectSetting, AsideMenu },
+    components: {
+      ...components,
+      NDialogProvider,
+      ProjectSetting,
+      AsideMenu,
+      VueCropper,
+    },
     props: {
       collapsed: {
         type: Boolean,
@@ -247,7 +277,63 @@
       const formRef = ref<FormInst | null>(null);
       const drawerSetting = ref();
       const fishCoin = ref('0');
+      const imgSrc = ref(userInfo.value.headerImg || '');
+      const cropImg = ref('');
+      const cropper = ref();
+      const input = ref();
+      const cropImage = () => {
+        // get image data for post processing, e.g. upload or setting image src
+        cropImg.value = cropper.value.getCroppedCanvas().toDataURL();
+      };
+      const reset = () => {
+        cropper.value.reset();
+      };
+      const showFileChooser = () => {
+        input.value.click();
+      };
+      const submitAvatar = async () => {
+        // 这个是裁剪的结果
+        cropImg.value = cropper.value.getCroppedCanvas().toDataURL();
+        if (imgSrc.value === userInfo.value.headerImg) {
+          console.log('未发生改变');
+          return;
+        }
+        // 判断上传的照片是不是gif
+        const type = imgSrc.value.substring(5, 14);
+        const isGIF = type === 'image/gif' || type === 'image/GIF';
+        let avatar = cropImg.value;
+        if (isGIF) {
+          avatar = imgSrc.value;
+        }
+        const { code, msg } = await setSelfInfo({ headerImg: avatar });
+        if (code === 0) {
+          showProfileModal.value = false;
+          await userStore.getInfo;
+        }
+        message.info(msg);
+      };
+      const setImage = (e) => {
+        const file = e.target.files[0];
 
+        if (file.type.indexOf('image/') === -1) {
+          message.info('请上传图片文件');
+          return;
+        }
+
+        if (typeof FileReader === 'function') {
+          const reader = new FileReader();
+
+          reader.onload = (event: any) => {
+            imgSrc.value = event.target.result;
+            // rebuild cropperjs with the updated source
+            cropper.value.replace(event.target.result);
+          };
+
+          reader.readAsDataURL(file);
+        } else {
+          alert('Sorry, FileReader API not supported');
+        }
+      };
       const renderIcon = () => {
         return h(NIcon, null, {
           default: () => h(CashIcon),
@@ -502,6 +588,15 @@
         formValue,
         rules,
         fishCoin,
+        imgSrc,
+        cropImg,
+        setImage,
+        cropImage,
+        reset,
+        showFileChooser,
+        submitAvatar,
+        input,
+        cropper,
         userInfo,
         checkIn,
         renderIcon,
@@ -643,4 +738,61 @@
   //    color: #1890ff;
   //  }
   //}
+
+  input[type='file'] {
+    display: none;
+  }
+
+  .content {
+    display: flex;
+  }
+
+  .cropper-area {
+    width: 214px;
+    margin-right: 10px;
+  }
+
+  .actions {
+    margin-top: 1rem;
+  }
+
+  .actions a {
+    display: inline-block;
+    padding: 5px 15px;
+    background: #0062cc;
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .preview-area {
+    width: 67px;
+  }
+
+  .preview-area p {
+    font-size: 1.25rem;
+    margin: 0 0 1rem;
+  }
+
+  .preview-area p:last-of-type {
+    margin-top: 1rem;
+  }
+
+  .preview {
+    width: 100%;
+    height: calc(67px * (16 / 16));
+    overflow: hidden;
+  }
+
+  .crop-placeholder {
+    width: 67px;
+    height: 67px;
+    background: #ccc;
+  }
+
+  .cropped-image img {
+    max-width: 100%;
+  }
 </style>
