@@ -24,7 +24,6 @@
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="新建密钥">
       <n-form
         :model="formParams"
-        :rules="rules"
         ref="formRef"
         label-placement="left"
         :label-width="80"
@@ -34,7 +33,8 @@
           <n-input type="text" placeholder="名字" v-model:value="formParams.skName" />
         </n-form-item>
         <n-form-item label="过期" path="expire">
-          <n-date-picker v-model:value="formParams.expire" type="datetime" clearable />
+          <!-- <n-date-picker v-model:value="formParams.expire" type="datetime" clearable disabled />-->
+          <n-input disabled value="无限制" />
         </n-form-item>
       </n-form>
 
@@ -54,17 +54,8 @@
   import { createSecretKey, deleteSecretKey, getSecretKeyList } from '@/api/platform/sk';
   import { columns } from './columns';
   import { PlusOutlined } from '@vicons/antd';
-  import { type FormRules } from 'naive-ui';
   import { formatToDateTime } from '@/utils/dateUtil';
   import { copyToClip } from '@/utils/copy';
-
-  const rules: FormRules = {
-    feedbackText: {
-      required: true,
-      trigger: ['blur', 'input'],
-      message: '请输入地址',
-    },
-  };
 
   const formRef: any = ref(null);
   const actionRef = ref();
@@ -73,7 +64,7 @@
   const formBtnLoading = ref(false);
   const formParams = reactive({
     skName: '',
-    expire: Date.now(),
+    expire: 0,
   });
 
   const actionColumn = reactive({
@@ -154,7 +145,7 @@
         window['$message'].error('请填写完整信息');
       }
       formParams.skName = '';
-      formParams.expire = Date.now();
+      formParams.expire = 0;
       formBtnLoading.value = false;
     });
   };

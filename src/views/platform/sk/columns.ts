@@ -22,9 +22,22 @@ export const columns = [
     key: 'expire',
     width: 80,
     render(row) {
-      return h(NTime, {
-        time: new Date(row.expire),
-      });
+      if (row.expire === 0) {
+        return h(
+          NButton,
+          {
+            strong: true,
+            secondary: true,
+            type: 'success',
+            size: 'small',
+          },
+          { default: () => '无限制' }
+        );
+      } else {
+        return h(NTime, {
+          time: new Date(row.expire),
+        });
+      }
     },
   },
   {
