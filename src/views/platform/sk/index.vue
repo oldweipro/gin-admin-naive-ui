@@ -21,7 +21,7 @@
       </template>
     </BasicTable>
 
-    <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="新建反馈">
+    <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="新建密钥">
       <n-form
         :model="formParams"
         :rules="rules"
@@ -30,12 +30,11 @@
         :label-width="80"
         class="py-4"
       >
-        <n-form-item label="反馈" path="feedbackText">
-          <n-input
-            type="textarea"
-            placeholder="请输入您的反馈"
-            v-model:value="formParams.feedbackText"
-          />
+        <n-form-item label="名字" path="skName">
+          <n-input type="text" placeholder="名字" v-model:value="formParams.skName" />
+        </n-form-item>
+        <n-form-item label="过期" path="expire">
+          <n-date-picker v-model:value="formParams.expire" type="datetime" clearable />
         </n-form-item>
       </n-form>
 
@@ -52,11 +51,12 @@
 <script lang="ts" setup>
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
-  import { createFeedback, deleteFeedback, getFeedbackList } from '@/api/feedback/feedback';
+  import { createSecretKey, deleteSecretKey, getSecretKeyList } from '@/api/platform/sk';
   import { columns } from './columns';
   import { PlusOutlined } from '@vicons/antd';
   import { type FormRules } from 'naive-ui';
   import { formatToDateTime } from '@/utils/dateUtil';
+  import { copyToClip } from '@/utils/copy';
 
   const rules: FormRules = {
     feedbackText: {
@@ -72,11 +72,12 @@
   const showModal = ref(false);
   const formBtnLoading = ref(false);
   const formParams = reactive({
-    feedbackText: '',
+    skName: '',
+    expire: Date.now(),
   });
 
   const actionColumn = reactive({
-    width: 150,
+    width: 70,
     title: '操作',
     key: 'action',
     fixed: 'right',
@@ -85,6 +86,16 @@
       return h(TableAction as any, {
         style: 'button',
         actions: [
+          {
+            label: '复制',
+            onClick: copySk.bind(null, record),
+            // 根据业务控制是否显示 isShow 和 auth 是并且关系
+            ifShow: () => {
+              return true;
+            },
+            // 根据权限控制是否显示: 有权限，会显示，支持多个
+            auth: ['basic_list'],
+          },
           {
             label: '删除',
             onClick: handleDelete.bind(null, record),
@@ -108,7 +119,7 @@
   }
 
   const loadDataTable = async (res) => {
-    const result = await getFeedbackList(res);
+    const result = await getSecretKeyList(res);
     const feedbackList = result.data;
     feedbackList.list.forEach((fb) => {
       fb.CreatedAt = formatToDateTime(new Date(fb.CreatedAt));
@@ -125,13 +136,13 @@
     console.log(rowKeys);
   }
 
-  // 新建反馈
+  // 新建sk
   const confirmForm = (e) => {
     e.preventDefault();
     formBtnLoading.value = true;
     formRef.value.validate(async (errors) => {
       if (!errors) {
-        const { code, msg } = await createFeedback(formParams);
+        const { code, msg } = await createSecretKey(formParams);
         if (code === 0) {
           window['$message'].success(msg);
           showModal.value = false;
@@ -142,19 +153,25 @@
       } else {
         window['$message'].error('请填写完整信息');
       }
-      formParams.feedbackText = '';
+      formParams.skName = '';
+      formParams.expire = Date.now();
       formBtnLoading.value = false;
     });
   };
 
   const handleDelete = async (record: Recordable) => {
-    const { code, msg } = await deleteFeedback({ ID: record.ID });
+    const { code, msg } = await deleteSecretKey({ ID: record.ID });
     if (code === 0) {
       window['$message'].success(msg);
     } else {
       window['$message'].error(msg);
     }
     await reloadTable();
+  };
+
+  const copySk = async (record: Recordable) => {
+    await copyToClip(record.sk);
+    window['$message'].success('复制成功');
   };
 </script>
 
