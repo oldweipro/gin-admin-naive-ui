@@ -17,7 +17,7 @@
           :rules="rules"
         >
           <n-form-item path="username">
-            <n-input v-model:value="formInline.username" placeholder="请输入用户名/手机号">
+            <n-input v-model:value="formInline.username" placeholder="请输入用户名/手机号" @keydown.enter="password.focus()">
               <template #prefix>
                 <n-icon size="18" color="#808695">
                   <PersonOutline />
@@ -32,6 +32,8 @@
               showPasswordOn="click"
               placeholder="请输入密码"
               maxlength="36"
+              ref="password"
+              @keydown.enter="captcha.focus()"
             >
               <template #prefix>
                 <n-icon size="18" color="#808695">
@@ -41,7 +43,7 @@
             </n-input>
           </n-form-item>
           <n-form-item path="captcha" v-if="isLogin">
-            <n-input v-model:value="formInline.captcha" placeholder="请输入图形验证码" />
+            <n-input ref="captcha" v-model:value="formInline.captcha" placeholder="请输入图形验证码"  @keydown.enter="handleSubmit"/>
             <n-image
               :width="98"
               preview-disabled
@@ -195,7 +197,8 @@
     password: string;
     smsCode: string;
   }
-
+  const password=ref();
+  const captcha=ref();
   const formRef = ref();
   const message = useMessage();
   const loading = ref(false);
