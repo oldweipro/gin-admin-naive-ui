@@ -9,7 +9,7 @@
     <template v-if="!showLogin">
       <div class="lock-box">
         <div class="lock">
-          <span class="lock-icon" title="解锁屏幕" @click="onLockLogin(true)">
+          <span class="lock-icon" title="解锁屏幕" @click="unlockScreen()">
             <n-icon>
               <lock-outlined />
             </n-icon>
@@ -133,6 +133,12 @@
       // 解锁登录
       const onLockLogin = (value: boolean) => (state.showLogin = value);
 
+      // 解锁屏幕
+      const unlockScreen = () => {
+        onLockLogin(false);
+        useScreenLock.setLock(false);
+      };
+
       // 登录
       const onLogin = async () => {
         if (!state.loginParams.password.trim()) {
@@ -182,6 +188,7 @@
         onLockLogin,
         onLogin,
         goLogin,
+        unlockScreen,
       };
     },
   });
