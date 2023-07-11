@@ -121,12 +121,16 @@
 
   const loadDataTable = async (res) => {
     const result = await getServerNodeList(res);
-    const serverNodeList = result.data;
-    serverNodeList.list.forEach((fb) => {
-      fb.CreatedAt = formatToDateTime(new Date(fb.CreatedAt));
-    });
-    serverNodeList.total = Math.ceil(serverNodeList.total / serverNodeList.pageSize);
-    return serverNodeList;
+    if (result.code === 0) {
+      const serverNodeList = result.data;
+      serverNodeList.list.forEach((fb) => {
+        fb.CreatedAt = formatToDateTime(new Date(fb.CreatedAt));
+      });
+      serverNodeList.total = Math.ceil(serverNodeList.total / serverNodeList.pageSize);
+      return serverNodeList;
+    } else {
+      window['$message'].info(result.msg);
+    }
   };
   function reloadTable() {
     actionRef.value.reload();
