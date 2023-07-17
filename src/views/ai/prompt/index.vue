@@ -10,6 +10,7 @@
             content-style="padding-top: 0;"
             size="small"
             :bordered="false"
+            @click="console.log(item)"
           >
             <template #header-extra>
               <n-tag type="success">{{ item.shortcutKey }}</n-tag>
@@ -45,7 +46,6 @@
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue';
   import { getCurrentUserPromptList } from '@/api/ai/prompt';
-  import {CountTo} from "@/components/CountTo";
 
   const loading = ref(true);
   // 提示词列表
@@ -53,14 +53,12 @@
   onMounted(async () => {
     const { code, data } = await getCurrentUserPromptList({ page: 1, pageSize: 10 });
     if (code === 0) {
-      promptList.value = data.list.map(({ name, shortcutKey, description, content }) => ({
+      promptList.value = data.list.map(({ ID, name, shortcutKey, description, content }) => ({
         title: name,
         description: description,
         shortcutKey: shortcutKey,
         content: content,
-        eventObject: {
-          click: () => {},
-        },
+        id: ID,
       }));
     }
     loading.value = false;
