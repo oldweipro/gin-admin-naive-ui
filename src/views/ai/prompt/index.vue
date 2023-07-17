@@ -2,38 +2,50 @@
   <div class="console">
     <!--导航卡片-->
     <div class="mt-4">
-      <n-grid cols="1 s:2 m:3 l:8 xl:8 2xl:8" responsive="screen" :x-gap="16" :y-gap="8">
+      <n-grid cols="1 s:2 m:3 l:4 xl:4 2xl:4" responsive="screen" :x-gap="12" :y-gap="8">
         <n-grid-item v-for="(item, index) in promptList" :key="index">
-          <NCard content-style="padding-top: 0;" size="small" :bordered="false">
+          <NCard
+            :title="item.title"
+            :segmented="{ content: true, footer: true }"
+            content-style="padding-top: 0;"
+            size="small"
+            :bordered="false"
+          >
+            <template #header-extra>
+              <n-tag type="success">{{ item.shortcutKey }}</n-tag>
+            </template>
+            <div class="py-1 px-1 flex justify-between">
+              <div class="text-sn">
+                <n-skeleton v-if="loading" :width="100" size="medium" />
+                <n-ellipsis line-clamp="2" v-else>
+                  {{ item.content }}
+                </n-ellipsis>
+              </div>
+            </div>
             <template #footer>
-              <n-skeleton v-if="loading" size="medium" />
-              <div class="cursor-pointer" v-else>
-                <p class="flex justify-center">
-                  <span>
-                    <n-icon :size="item.size" class="flex-1" :color="item.color">
-                      <component :is="item.icon" v-on="item.eventObject || {}" />
-                    </n-icon>
-                  </span>
-                </p>
-                <p class="flex justify-center">
-                  <span>{{ item.title }}</span>
-                </p>
+              <div class="flex justify-between">
+                <n-skeleton v-if="loading" text :repeat="2" />
+                <template v-else>
+                  <div class="text-sn">
+                    <n-gradient-text
+                      gradient="linear-gradient(90deg, red 0%, green 50%, blue 100%)"
+                    >
+                      {{ item.description }}
+                    </n-gradient-text>
+                  </div>
+                </template>
               </div>
             </template>
           </NCard>
         </n-grid-item>
       </n-grid>
     </div>
-
-    <!--访问量 | 流量趋势-->
-    <VisitTab />
   </div>
 </template>
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue';
-  import VisitTab from './components/VisiTab.vue';
-  import { TagsOutlined } from '@vicons/antd';
   import { getCurrentUserPromptList } from '@/api/ai/prompt';
+  import {CountTo} from "@/components/CountTo";
 
   const loading = ref(true);
   // 提示词列表
@@ -41,11 +53,11 @@
   onMounted(async () => {
     const { code, data } = await getCurrentUserPromptList({ page: 1, pageSize: 10 });
     if (code === 0) {
-      promptList.value = data.list.map(({ name }) => ({
-        icon: TagsOutlined,
-        size: '32',
+      promptList.value = data.list.map(({ name, shortcutKey, description, content }) => ({
         title: name,
-        color: '#ff85c0',
+        description: description,
+        shortcutKey: shortcutKey,
+        content: content,
         eventObject: {
           click: () => {},
         },
