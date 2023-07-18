@@ -30,6 +30,9 @@ export function chatCompletions(params: {
   const data: Record<string, any> = {
     prompt: params.prompt,
     conversationId: params.conversationId,
+    conversationType: 2,
+    promptId: 1,
+    standardAlone: 1,
     sign: encryptedStr,
   };
   return http.request(
