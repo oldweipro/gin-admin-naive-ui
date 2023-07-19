@@ -21,6 +21,8 @@ export function getCurrentUserConversationList(params) {
  */
 export function chatCompletions(params: {
   prompt: string;
+  promptId: number;
+  standardAlone: number;
   conversationId: number;
   signal?: GenericAbortSignal;
   onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void;
@@ -30,9 +32,8 @@ export function chatCompletions(params: {
   const data: Record<string, any> = {
     prompt: params.prompt,
     conversationId: params.conversationId,
-    conversationType: 2,
-    promptId: 1,
-    standardAlone: 1,
+    promptId: params.promptId,
+    standardAlone: params.standardAlone,
     sign: encryptedStr,
   };
   return http.request(

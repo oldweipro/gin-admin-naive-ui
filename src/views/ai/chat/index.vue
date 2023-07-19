@@ -134,6 +134,7 @@
   });
   // console.log(dataSources.value)
   const prompt = ref<string>('');
+  const promptId = ref<number>(0);
   const loading = ref<boolean>(false);
   const inputRef = ref<Ref | null>(null);
 
@@ -201,6 +202,8 @@
         // console.log('发起请求时的会话ID: ', chatStore.active!)
         await chatCompletions({
           prompt: message,
+          promptId: promptId.value,
+          standardAlone: promptId.value > 0 ? 1 : 0,
           conversationId: chatStore.active!,
           signal: controller.signal,
           onDownloadProgress: ({ event }) => {
@@ -305,6 +308,8 @@
       const fetchChatAPIOnce = async () => {
         await chatCompletions({
           prompt: 'message',
+          promptId: promptId.value,
+          standardAlone: promptId.value > 0 ? 1 : 0,
           conversationId: chatStore.active as number,
           // options,
           signal: controller.signal,
@@ -422,6 +427,7 @@
         chatStore.deleteChatByUuid(chatStore.active!, index);
       },
     });
+    promptId.value = 0;
   }
 
   function handleClear() {
@@ -443,6 +449,7 @@
         await chatStore.loadData({ conversationType: 0 });
       },
     });
+    promptId.value = 0;
   }
 
   function handleEnter(event: KeyboardEvent) {
@@ -492,7 +499,7 @@
 
   const onSelect = (value: string) => {
     // 清空输入框内容
-    console.log('data:', value);
+    promptId.value = parseInt(value);
   };
 
   const placeholder = computed(() => {
