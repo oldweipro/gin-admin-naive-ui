@@ -66,8 +66,9 @@
               <NAutoComplete
                 v-model:value="prompt"
                 :options="searchOptions"
-                :on-select="onSel"
+                :on-select="onSelect"
                 :render-label="renderOption"
+                clear-after-select
               >
                 <template #default="{ handleInput, handleBlur, handleFocus }">
                   <NInput
@@ -100,8 +101,8 @@
 
 <script lang="ts" setup>
   import type { Ref } from 'vue';
-  import { computed, onMounted, onUnmounted, ref } from 'vue';
-  import { useDialog, useMessage } from 'naive-ui';
+  import { computed, onMounted, onUnmounted, ref, h } from 'vue';
+  import { useDialog, useMessage, NTag } from 'naive-ui';
   import html2canvas from 'html2canvas';
   import { useScroll } from '@/hooks/chat/useScroll';
   import { useChat } from '@/hooks/chat/useChat';
@@ -469,32 +470,29 @@
   // 搜索选项计算，这里使用value作为索引项，所以当出现重复value时渲染异常(多项同时出现选中效果)
   // 理想状态下其实应该是key作为索引项,但官方的renderOption会出现问题，所以就需要value反renderLabel实现
   const searchOptions = computed(() => {
-    if (prompt.value.startsWith('/')) {
-      return promptTemplate.value
-        .filter((item: { key: string }) =>
-          item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())
-        )
-        .map((obj: { value: any }) => {
-          return {
-            label: obj.value,
-            value: obj.value,
-          };
-        });
-    } else {
-      return [];
-    }
+    return promptTemplate.value
+      .filter((item: { key: string }) => item.key.includes(prompt.value))
+      .map((obj: { value: any }) => {
+        return {
+          label: obj.value,
+          value: obj.value,
+        };
+      });
   });
 
   // value反渲染key
   const renderOption = (option: { label: string }) => {
     for (const i of promptTemplate.value) {
-      if (i.value === option.label) return [i.key];
+      if (i.value === option.label) {
+        return [h(NTag, { size: 'small', type: 'info' }, { default: () => '快捷键' }), ' ', i.key];
+      }
     }
     return [];
   };
 
-  const onSel = (value: string) => {
-    console.log('aaaa:', value);
+  const onSelect = (value: string) => {
+    // 清空输入框内容
+    console.log('data:', value);
   };
 
   const placeholder = computed(() => {
