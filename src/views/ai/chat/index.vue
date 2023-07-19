@@ -63,7 +63,12 @@
                   <SvgIcon icon="ri:download-2-line" />
                 </span>
               </HoverButton>
-              <NAutoComplete v-model:value="prompt">
+              <NAutoComplete
+                v-model:value="prompt"
+                :options="searchOptions"
+                :on-select="onSel"
+                :render-label="renderOption"
+              >
                 <template #default="{ handleInput, handleBlur, handleFocus }">
                   <NInput
                     ref="inputRef"
@@ -106,6 +111,7 @@
   import { useChatStore } from '@/hooks/chat';
   import { chatCompletions, createConversation } from '@/api/ai/chat';
   import Message from '@/views/ai/chat/message/message.vue';
+  import { getCurrentUserPromptList } from '@/api/ai/prompt';
 
   let controller = new AbortController();
 
@@ -130,22 +136,18 @@
   const loading = ref<boolean>(false);
   const inputRef = ref<Ref | null>(null);
 
+  onMounted(async () => {
+    const { code, data } = await getCurrentUserPromptList({ page: 1, pageSize: 10 });
+    if (code === 0) {
+      promptTemplate.value = data.list.map(({ ID, name, description }) => ({
+        key: name,
+        value: ID.toString(),
+      }));
+    }
+  });
   // 选择prompt
-  const selectedPrompt = ref('');
-  const prompts = ref([
-    {
-      label: '翻译',
-      value: 'translation',
-    },
-    {
-      label: '小红书文案',
-      value: 'xhsCopyWriting',
-    },
-    {
-      label: '微信公众号文案',
-      value: 'wxCopyWriting',
-    },
-  ]);
+  // const selectedPrompt = ref('');
+  const promptTemplate = ref([]);
   // 未知原因刷新页面，loading 状态不会重置，手动重置
   dataSources.value.forEach((item, index) => {
     if (item.loading) {
@@ -462,6 +464,38 @@
       loading.value = false;
     }
   }
+
+  // 可优化部分
+  // 搜索选项计算，这里使用value作为索引项，所以当出现重复value时渲染异常(多项同时出现选中效果)
+  // 理想状态下其实应该是key作为索引项,但官方的renderOption会出现问题，所以就需要value反renderLabel实现
+  const searchOptions = computed(() => {
+    if (prompt.value.startsWith('/')) {
+      return promptTemplate.value
+        .filter((item: { key: string }) =>
+          item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())
+        )
+        .map((obj: { value: any }) => {
+          return {
+            label: obj.value,
+            value: obj.value,
+          };
+        });
+    } else {
+      return [];
+    }
+  });
+
+  // value反渲染key
+  const renderOption = (option: { label: string }) => {
+    for (const i of promptTemplate.value) {
+      if (i.value === option.label) return [i.key];
+    }
+    return [];
+  };
+
+  const onSel = (value: string) => {
+    console.log('aaaa:', value);
+  };
 
   const placeholder = computed(() => {
     if (isMobile.value) {
