@@ -47,7 +47,12 @@
       <template #action>
         <n-space>
           <n-button @click="() => (showModal = false)">取消</n-button>
-          <n-button type="info" :loading="formBtnLoading" @click="confirmForm">复制链接</n-button>
+          <n-button type="info" :loading="formBtnLoading" @click="confirmFormImportClash"
+            >导入Clash</n-button
+          >
+          <n-button type="info" :loading="formBtnLoading" @click="confirmFormCopyLink64"
+            >复制链接</n-button
+          >
         </n-space>
       </template>
     </n-modal>
@@ -92,7 +97,7 @@
   });
 
   const actionColumn = reactive({
-    width: 50,
+    width: 80,
     title: '操作',
     key: 'action',
     fixed: 'right',
@@ -102,8 +107,18 @@
         style: 'button',
         actions: [
           {
+            label: '导入Clash',
+            onClick: getInboundsLinkImportClash.bind(null, record),
+            // 根据业务控制是否显示 isShow 和 auth 是并且关系
+            ifShow: () => {
+              return true;
+            },
+            // 根据权限控制是否显示: 有权限，会显示，支持多个
+            auth: ['basic_list'],
+          },
+          {
             label: '🔗复制链接',
-            onClick: getInboundsLink.bind(null, record),
+            onClick: getInboundsLinkCopyLink64.bind(null, record),
             // 根据业务控制是否显示 isShow 和 auth 是并且关系
             ifShow: () => {
               return true;
@@ -147,8 +162,41 @@
     await reloadTable();
   };
 
+  // 导入Clash
+  const getInboundsLinkImportClash = async (record: Recordable) => {
+    // 组装链接并打开新标签页
+    const { code, data, msg } = await findInboundsLink({ sid: record.ID });
+    if (code === 0) {
+      inboundsData.value = data.inboundsData;
+      inboundsData.value.domain = data.domain;
+      inboundsData.value.region = data.region;
+      await copyToClip(inboundsData.value.clashSub || '');
+      window['$message'].success('复制成功');
+      window.open('clash://install-config?url=' + inboundsData.value.clashSub);
+      // window.open('clash://install-config?url=https%3A%2F%2Fpub-api-1.bianyuan.xyz%2Fsub%3Ftarget%3Dclash%26url%3Dvmess%253A%252F%252FewogICJhZGQiOiAibGEub2xkd2VpLmNvbSIsCiAgImFpZCI6IDAsCiAgImhvc3QiOiAiIiwKICAiaWQiOiAiODJhYWQxMTQtMDg3MS00NTYzLTgyMGMtYWIwY2YyODQ1ZmJjIiwKICAibmV0IjogInRjcCIsCiAgInBhdGgiOiAiIiwKICAicG9ydCI6ICI1MzcwNSIsCiAgInBzIjogIua0m%252Badieefti1BIiwKICAidGxzIjogInRscyIsCiAgInR5cGUiOiAibm9uZSIsCiAgInYiOiAiMiIKfQ%253D%253D%26insert%3Dfalse');
+    } else {
+      window['$message'].error(msg);
+    }
+  };
+
+  // 导入Clash
+  const confirmFormImportClash = async () => {
+    // 复制到剪切板
+    try {
+      await copyToClip(inboundsData.value.clashSub || '');
+      window['$message'].success('复制成功');
+      window.open('clash://install-config?url=' + inboundsData.value.clashSub);
+      // clash://install-config?url=https://subconverter.oldwei.com/sub?target=clash&url=https%3A%2F%2Fsubconverter.oldwei.com%2Fsub%3Ftarget%3Dclash%26url%3Dvmess%3A%2F%2FewogICJhZGQiOiAibGEub2xkd2VpLmNvbSIsCiAgImFpZCI6IDAsCiAgImhvc3QiOiAiIiwKICAiaWQiOiAiODJhYWQxMTQtMDg3MS00NTYzLTgyMGMtYWIwY2YyODQ1ZmJjIiwKICAibmV0IjogInRjcCIsCiAgInBhdGgiOiAiIiwKICAicG9ydCI6ICI1MzcwNSIsCiAgInBzIjogIua0m%2Badieefti1BIiwKICAidGxzIjogInRscyIsCiAgInR5cGUiOiAibm9uZSIsCiAgInYiOiAiMiIKfQ%3D%3D&insert=false
+      // clash://install-config?url=https%3A%2F%2Fpub-api-1.bianyuan.xyz%2Fsub%3Ftarget%3Dclash%26url%3Dvmess%253A%252F%252FewogICJhZGQiOiAibGEub2xkd2VpLmNvbSIsCiAgImFpZCI6IDAsCiAgImhvc3QiOiAiIiwKICAiaWQiOiAiODJhYWQxMTQtMDg3MS00NTYzLTgyMGMtYWIwY2YyODQ1ZmJjIiwKICAibmV0IjogInRjcCIsCiAgInBhdGgiOiAiIiwKICAicG9ydCI6ICI1MzcwNSIsCiAgInBzIjogIua0m%252Badieefti1BIiwKICAidGxzIjogInRscyIsCiAgInR5cGUiOiAibm9uZSIsCiAgInYiOiAiMiIKfQ%253D%253D%26insert%3Dfalse');
+    } catch (e) {
+      window['$message'].error('复制失败');
+    }
+    showModal.value = false;
+    await reloadTable();
+  };
+
   // 复制链接
-  const confirmForm = async () => {
+  const confirmFormCopyLink64 = async () => {
     // 复制到剪切板
     try {
       await copyToClip(inboundsData.value.link64 || '');
@@ -160,7 +208,7 @@
     await reloadTable();
   };
 
-  const getInboundsLink = async (record: Recordable) => {
+  const getInboundsLinkCopyLink64 = async (record: Recordable) => {
     const { code, data, msg } = await findInboundsLink({ sid: record.ID });
     if (code === 0) {
       inboundsData.value = data.inboundsData;
