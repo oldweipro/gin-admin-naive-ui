@@ -172,8 +172,8 @@
       inboundsData.value.region = data.region;
       await copyToClip(inboundsData.value.clashSub || '');
       window['$message'].success('复制成功');
-      window.open('clash://install-config?url=' + inboundsData.value.clashSub);
-      // window.open('clash://install-config?url=https%3A%2F%2Fpub-api-1.bianyuan.xyz%2Fsub%3Ftarget%3Dclash%26url%3Dvmess%253A%252F%252FewogICJhZGQiOiAibGEub2xkd2VpLmNvbSIsCiAgImFpZCI6IDAsCiAgImhvc3QiOiAiIiwKICAiaWQiOiAiODJhYWQxMTQtMDg3MS00NTYzLTgyMGMtYWIwY2YyODQ1ZmJjIiwKICAibmV0IjogInRjcCIsCiAgInBhdGgiOiAiIiwKICAicG9ydCI6ICI1MzcwNSIsCiAgInBzIjogIua0m%252Badieefti1BIiwKICAidGxzIjogInRscyIsCiAgInR5cGUiOiAibm9uZSIsCiAgInYiOiAiMiIKfQ%253D%253D%26insert%3Dfalse');
+      const url = 'clash://install-config?url=';
+      window.open(url + encodeURIComponent(inboundsData.value.clashSub));
     } else {
       window['$message'].error(msg);
     }
@@ -185,9 +185,8 @@
     try {
       await copyToClip(inboundsData.value.clashSub || '');
       window['$message'].success('复制成功');
-      window.open('clash://install-config?url=' + inboundsData.value.clashSub);
-      // clash://install-config?url=https://subconverter.oldwei.com/sub?target=clash&url=https%3A%2F%2Fsubconverter.oldwei.com%2Fsub%3Ftarget%3Dclash%26url%3Dvmess%3A%2F%2FewogICJhZGQiOiAibGEub2xkd2VpLmNvbSIsCiAgImFpZCI6IDAsCiAgImhvc3QiOiAiIiwKICAiaWQiOiAiODJhYWQxMTQtMDg3MS00NTYzLTgyMGMtYWIwY2YyODQ1ZmJjIiwKICAibmV0IjogInRjcCIsCiAgInBhdGgiOiAiIiwKICAicG9ydCI6ICI1MzcwNSIsCiAgInBzIjogIua0m%2Badieefti1BIiwKICAidGxzIjogInRscyIsCiAgInR5cGUiOiAibm9uZSIsCiAgInYiOiAiMiIKfQ%3D%3D&insert=false
-      // clash://install-config?url=https%3A%2F%2Fpub-api-1.bianyuan.xyz%2Fsub%3Ftarget%3Dclash%26url%3Dvmess%253A%252F%252FewogICJhZGQiOiAibGEub2xkd2VpLmNvbSIsCiAgImFpZCI6IDAsCiAgImhvc3QiOiAiIiwKICAiaWQiOiAiODJhYWQxMTQtMDg3MS00NTYzLTgyMGMtYWIwY2YyODQ1ZmJjIiwKICAibmV0IjogInRjcCIsCiAgInBhdGgiOiAiIiwKICAicG9ydCI6ICI1MzcwNSIsCiAgInBzIjogIua0m%252Badieefti1BIiwKICAidGxzIjogInRscyIsCiAgInR5cGUiOiAibm9uZSIsCiAgInYiOiAiMiIKfQ%253D%253D%26insert%3Dfalse');
+      const url = 'clash://install-config?url=';
+      window.open(url + encodeURIComponent(inboundsData.value.clashSub));
     } catch (e) {
       window['$message'].error('复制失败');
     }
