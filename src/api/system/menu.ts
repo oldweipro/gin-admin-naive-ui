@@ -6,8 +6,8 @@ import { http } from '@/utils/http/axios';
 export function getMenu() {
   return http.request(
     {
-      url: '/menu/getMenu',
-      method: 'POST',
+      url: '/menu/getMenus',
+      method: 'GET',
     },
     {
       isTransformResponse: false,
