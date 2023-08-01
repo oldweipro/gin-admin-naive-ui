@@ -94,6 +94,7 @@
     link64: '',
     domain: '地址不可用',
     region: '节点信息',
+    clashSub: '',
   });
 
   const actionColumn = reactive({

@@ -76,7 +76,6 @@
         class="layout-header-trigger layout-header-trigger-min"
         v-for="item in iconList"
         :key="item.icon"
-        v-show="false"
       >
         <n-tooltip placement="bottom">
           <template #trigger>
