@@ -513,15 +513,15 @@
 
       // 图标列表
       const iconList = [
-        {
-          icon: 'SearchOutlined',
-          tips: '搜索',
-        },
+        // {
+        //   icon: 'SearchOutlined',
+        //   tips: '搜索',
+        // },
         {
           icon: 'GithubOutlined',
           tips: 'github',
           eventObject: {
-            click: () => window.open('https://github.com/jekip/naive-ui-admin'),
+            click: () => window.open('https://github.com/oldweipro'),
           },
         },
         {

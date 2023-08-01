@@ -5,6 +5,7 @@
     @keyup="onLockLogin(true)"
     @mousedown.stop
     @contextmenu.prevent
+    @click="unlockScreen()"
   >
     <template v-if="!showLogin">
       <div class="lock-box">
