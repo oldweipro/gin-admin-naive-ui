@@ -8,12 +8,12 @@ export const columns = [
     width: 20,
   },
   {
-    title: 'skName',
+    title: 'sk名称',
     key: 'skName',
     width: 50,
   },
   {
-    title: 'sk',
+    title: 'sk密钥',
     key: 'sk',
     width: 200,
   },
