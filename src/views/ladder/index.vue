@@ -9,7 +9,7 @@
       :scroll-x="1390"
       @update:checked-row-keys="onCheckedRow"
     >
-      <template #tableTitle>大家使用愉快😀</template>
+      <template #tableTitle>大家使用愉快😀<n-button v-if="activation">激活</n-button></template>
     </BasicTable>
 
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="节点信息">
@@ -72,6 +72,7 @@
   const formRef: any = ref(null);
   const actionRef = ref();
 
+  const activation = ref(false);
   const showModal = ref(false);
   const formBtnLoading = ref(false);
   const inboundsData = ref({
