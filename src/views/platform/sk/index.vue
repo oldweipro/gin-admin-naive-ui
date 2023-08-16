@@ -51,7 +51,12 @@
 <script lang="ts" setup>
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
-  import { createSecretKey, deleteSecretKey, getSecretKeyList } from '@/api/platform/sk';
+  import {
+    createSecretKey,
+    deleteSecretKey,
+    findSecretKey,
+    getSecretKeyList,
+  } from '@/api/platform/sk';
   import { columns } from './columns';
   import { PlusOutlined } from '@vicons/antd';
   import { formatToDateTime } from '@/utils/dateUtil';
@@ -157,12 +162,17 @@
     } else {
       window['$message'].error(msg);
     }
-    await reloadTable();
+    reloadTable();
   };
 
   const copySk = async (record: Recordable) => {
-    await copyToClip(record.sk);
-    window['$message'].success('复制成功');
+    const { code, msg, data } = await findSecretKey({ ID: record.ID });
+    if (code === 0) {
+      await copyToClip(data.sk);
+      window['$message'].success('复制成功');
+    } else {
+      window['$message'].error(msg);
+    }
   };
 </script>
 

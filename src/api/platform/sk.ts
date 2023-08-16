@@ -46,3 +46,19 @@ export function deleteSecretKey(data) {
     }
   );
 }
+
+/**
+ * @description: 删除 sk
+ */
+export function findSecretKey(params) {
+  return http.request(
+    {
+      url: '/secretKey/findSecretKey',
+      method: 'GET',
+      params,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
