@@ -29,41 +29,38 @@
           <n-input placeholder="描述" v-model:value="formValue.description" />
         </n-form-item>
         <n-form-item label="价格" path="mobile">
-          <n-input
+          <n-input-number
             placeholder="价格"
-            type="text"
             :allow-input="onlyAllowNumber"
             v-model:value="formValue.price"
           />
         </n-form-item>
         <n-form-item label="时长" path="mobile">
-          <n-input
+          <n-input-number
             placeholder="时长"
-            type="text"
             :allow-input="onlyAllowNumber"
             v-model:value="formValue.duration"
           />
         </n-form-item>
         <n-form-item label="数量" path="mobile">
-          <n-input
+          <n-input-number
             placeholder="数量"
-            type="text"
             :allow-input="onlyAllowNumber"
             v-model:value="formValue.quantity"
           />
         </n-form-item>
         <n-form-item label="菜单ID" path="mobile">
-          <n-input
+          <n-input-number
             placeholder="菜单ID"
-            type="text"
             :allow-input="onlyAllowNumber"
             v-model:value="formValue.menuId"
           />
         </n-form-item>
         <n-form-item label="标记" path="mobile">
-          <n-input
+          <n-input-number
             placeholder="标记"
-            type="text"
+            :show-button="false"
+            :precision="0"
             :allow-input="onlyAllowNumber"
             v-model:value="formValue.tag"
           />
@@ -89,6 +86,7 @@
   } from '@/api/ladder/ladder';
   import { columns } from './columns';
   import { formatToDateTime } from '@/utils/dateUtil';
+  import { SubscriptionPlan } from '@/model/subscriptionPlan';
 
   const formRef: any = ref(null);
   const actionRef = ref();
@@ -104,27 +102,15 @@
     },
   };
 
-  // const defaultValueRef: SubscriptionPlan = {
-  //   name: '',
-  //   description: '',
-  //   price: 0,
-  //   duration: 0,
-  //   quantity: 0,
-  //   menuId: 0,
-  //   tag: 0,
-  // };
-
-  const defaultValueRef = () => ({
+  const formValue = ref<SubscriptionPlan>({
     name: '',
     description: '',
-    price: '0',
-    duration: '0',
-    quantity: '0',
-    menuId: '0',
-    tag: '0',
+    price: 0,
+    duration: 0,
+    quantity: 0,
+    menuId: 0,
+    tag: 0,
   });
-
-  let formValue = reactive(defaultValueRef());
 
   const actionColumn = reactive({
     width: 80,
