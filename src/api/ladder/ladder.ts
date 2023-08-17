@@ -45,3 +45,34 @@ export function setInboundsLink(data) {
     }
   );
 }
+
+/**
+ * @description: 查询订阅计划
+ */
+export function getSubscriptionPlanByTag(params) {
+  return http.request(
+    {
+      url: '/subscriptionPlan/getSubscriptionPlanByTag',
+      method: 'GET',
+      params,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
+
+/**
+ * @description: 查询当前用户订阅计划
+ */
+export function getCurrentSubscriptionPlan() {
+  return http.request(
+    {
+      url: '/subscriptionPlan/getCurrentSubscriptionPlan',
+      method: 'GET',
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}

@@ -9,9 +9,22 @@
       :scroll-x="1390"
       @update:checked-row-keys="onCheckedRow"
     >
-      <template #tableTitle>大家使用愉快😀<n-button v-if="activation">激活</n-button></template>
+      <template #tableTitle>
+        <n-button type="primary" @click="activation = true"> 订阅 </n-button>
+        仅用于学习
+      </template>
     </BasicTable>
-
+    <n-modal
+      v-model:show="activation"
+      :mask-closable="false"
+      preset="dialog"
+      title="确认"
+      content="将扣除xxx"
+      positive-text="确认"
+      negative-text="算了"
+      @positive-click="onPositiveClick"
+      @negative-click="onNegativeClick"
+    />
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="节点信息">
       <n-form
         :model="inboundsData"
@@ -62,7 +75,13 @@
 <script lang="ts" setup>
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
-  import { findInboundsLink, setInboundsLink, getServerNodeList } from '@/api/ladder/ladder';
+  import {
+    findInboundsLink,
+    setInboundsLink,
+    getServerNodeList,
+    getCurrentSubscriptionPlan,
+    getSubscriptionPlanByTag,
+  } from '@/api/ladder/ladder';
   import { columns } from './columns';
   import { formatToDateTime } from '@/utils/dateUtil';
   import hljs from 'highlight.js';
@@ -71,6 +90,7 @@
 
   const formRef: any = ref(null);
   const actionRef = ref();
+  const subscriptionPlan = ref();
 
   const activation = ref(false);
   const showModal = ref(false);
@@ -135,6 +155,37 @@
       });
     },
   });
+
+  // getCurrentSubscriptionPlan 查询当前用户订阅计划
+  const loadSubscriptionPlan = async () => {
+    const result = await getSubscriptionPlanByTag({ tag: 1 });
+    if (result.code === 0) {
+      // const status = result.data.subscriptionUser;
+      console.log(result.data);
+    } else {
+      console.log('暂无信息');
+    }
+  };
+  loadSubscriptionPlan();
+  const loadCurrentSubscriptionPlan = async () => {
+    const result = await getCurrentSubscriptionPlan();
+    if (result.code === 0) {
+      const status = result.data.subscriptionUser.status;
+      if (status) {
+        activation.value = true;
+      }
+    }
+  };
+  loadCurrentSubscriptionPlan();
+
+  const onNegativeClick = async () => {
+    window['$message'].success('取消');
+    activation.value = false;
+  };
+  const onPositiveClick = async () => {
+    window['$message'].success('订阅');
+    activation.value = false;
+  };
 
   const loadDataTable = async (res) => {
     const result = await getServerNodeList(res);
