@@ -49,10 +49,26 @@ export function setInboundsLink(data) {
 /**
  * @description: 查询订阅计划
  */
-export function getSubscriptionPlanByTag(params) {
+export function createSubscriptionPlan(data) {
   return http.request(
     {
-      url: '/subscriptionPlan/getSubscriptionPlanByTag',
+      url: '/subscriptionPlan/createSubscriptionPlan',
+      method: 'POST',
+      data,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
+
+/**
+ * @description: 查询订阅计划
+ */
+export function getSubscriptionPlan(params) {
+  return http.request(
+    {
+      url: '/subscriptionPlan/getSubscriptionPlan',
       method: 'GET',
       params,
     },

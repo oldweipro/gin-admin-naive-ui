@@ -22,53 +22,56 @@
         ref="formRef"
         class="py-8"
       >
+        <n-form-item label="编号" path="ID">
+          <n-input-number
+            placeholder="编号"
+            :show-button="false"
+            :precision="0"
+            v-model:value="formValue.ID"
+          />
+        </n-form-item>
         <n-form-item label="订阅计划" path="name">
           <n-input v-model:value="formValue.name" placeholder="订阅计划名字" />
         </n-form-item>
-        <n-form-item label="描述" path="mobile">
+        <n-form-item label="描述" path="description">
           <n-input placeholder="描述" v-model:value="formValue.description" />
         </n-form-item>
-        <n-form-item label="价格" path="mobile">
+        <n-form-item label="价格" path="price">
           <n-input-number
             placeholder="价格"
-            :allow-input="onlyAllowNumber"
+            :show-button="false"
+            :precision="0"
             v-model:value="formValue.price"
           />
         </n-form-item>
-        <n-form-item label="时长" path="mobile">
+        <n-form-item label="时长" path="duration">
           <n-input-number
             placeholder="时长"
-            :allow-input="onlyAllowNumber"
+            :show-button="false"
+            :precision="0"
             v-model:value="formValue.duration"
           />
         </n-form-item>
-        <n-form-item label="数量" path="mobile">
+        <n-form-item label="数量" path="quantity">
           <n-input-number
             placeholder="数量"
-            :allow-input="onlyAllowNumber"
+            :show-button="false"
+            :precision="0"
             v-model:value="formValue.quantity"
           />
         </n-form-item>
-        <n-form-item label="菜单ID" path="mobile">
+        <n-form-item label="菜单ID" path="menuId">
           <n-input-number
             placeholder="菜单ID"
-            :allow-input="onlyAllowNumber"
-            v-model:value="formValue.menuId"
-          />
-        </n-form-item>
-        <n-form-item label="标记" path="mobile">
-          <n-input-number
-            placeholder="标记"
             :show-button="false"
             :precision="0"
-            :allow-input="onlyAllowNumber"
-            v-model:value="formValue.tag"
+            v-model:value="formValue.menuId"
           />
         </n-form-item>
         <div style="margin-left: 80px">
           <n-space>
-            <n-button type="primary" @click="onNegativeClick">提交预约</n-button>
-            <n-button @click="onPositiveClick">重置</n-button>
+            <n-button type="primary" @click="onPositiveClick">提交预约</n-button>
+            <n-button @click="onNegativeClick">重置</n-button>
           </n-space>
         </div>
       </n-form>
@@ -82,7 +85,8 @@
   import {
     getServerNodeList,
     getCurrentSubscriptionPlan,
-    getSubscriptionPlanByTag,
+    getSubscriptionPlan,
+    createSubscriptionPlan,
   } from '@/api/ladder/ladder';
   import { columns } from './columns';
   import { formatToDateTime } from '@/utils/dateUtil';
@@ -95,6 +99,11 @@
   const showModal = ref(false);
 
   const rules = {
+    ID: {
+      required: true,
+      message: '请输入编号',
+      trigger: 'blur',
+    },
     name: {
       required: true,
       message: '请输入名字',
@@ -103,13 +112,13 @@
   };
 
   const formValue = ref<SubscriptionPlan>({
+    ID: 0,
     name: '',
     description: '',
     price: 0,
     duration: 0,
     quantity: 0,
     menuId: 0,
-    tag: 0,
   });
 
   const actionColumn = reactive({
@@ -120,11 +129,9 @@
     align: 'center',
   });
 
-  const onlyAllowNumber = (value: string) => !value || /^\d+$/.test(value);
-
   // getCurrentSubscriptionPlan 查询当前用户订阅计划
   const loadSubscriptionPlan = async () => {
-    const result = await getSubscriptionPlanByTag({ tag: 1 });
+    const result = await getSubscriptionPlan({ ID: 1 });
     if (result.code === 0) {
       // const status = result.data.subscriptionUser;
       console.log(result.data);
@@ -149,6 +156,9 @@
     activation.value = false;
   };
   const onPositiveClick = async () => {
+    console.log(formValue.value);
+    const result = await createSubscriptionPlan(formValue.value);
+    console.log(result);
     window['$message'].success('订阅');
     activation.value = false;
   };

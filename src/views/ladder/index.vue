@@ -80,7 +80,7 @@
     setInboundsLink,
     getServerNodeList,
     getCurrentSubscriptionPlan,
-    getSubscriptionPlanByTag,
+    getSubscriptionPlan,
   } from '@/api/ladder/ladder';
   import { columns } from './columns';
   import { formatToDateTime } from '@/utils/dateUtil';
@@ -158,7 +158,7 @@
 
   // getCurrentSubscriptionPlan 查询当前用户订阅计划
   const loadSubscriptionPlan = async () => {
-    const result = await getSubscriptionPlanByTag({ tag: 1 });
+    const result = await getSubscriptionPlan({ tag: 1 });
     if (result.code === 0) {
       // const status = result.data.subscriptionUser;
       console.log(result.data);
