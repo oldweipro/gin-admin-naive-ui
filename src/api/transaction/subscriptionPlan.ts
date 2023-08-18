@@ -22,8 +22,8 @@ export function getSubscriptionPlanList(params: SubscriptionPlan) {
 /**
  * @description: 查询订阅计划
  */
-export function createSubscriptionPlan(data) {
-  return http.request(
+export function createSubscriptionPlan(data: SubscriptionPlan) {
+  return http.request<GinResponse<any>>(
     {
       url: '/subscriptionPlan/createSubscriptionPlan',
       method: 'POST',

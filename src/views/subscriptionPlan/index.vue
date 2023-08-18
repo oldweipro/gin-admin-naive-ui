@@ -69,8 +69,7 @@
         </n-form-item>
         <div style="margin-left: 80px">
           <n-space>
-            <n-button type="primary" @click="onPositiveClick">提交预约</n-button>
-            <n-button @click="onNegativeClick">重置</n-button>
+            <n-button type="primary" @click="onPositiveClick">提交</n-button>
           </n-space>
         </div>
       </n-form>
@@ -95,6 +94,7 @@
   const formRef: any = ref(null);
   const actionRef = ref();
 
+  const isEdit = ref(false);
   const activation = ref(false);
   const showModal = ref(false);
 
@@ -168,40 +168,25 @@
     console.log('修改');
     console.log(record);
   };
-  // getCurrentSubscriptionPlan 查询当前用户订阅计划
-  const loadSubscriptionPlan = async () => {
-    const result = await getSubscriptionPlan({ id: 1 });
-    if (result.code === 0) {
-      // const status = result.data.subscriptionUser;
-      console.log(result.data);
-    } else {
-      console.log('暂无信息');
-    }
-  };
-  loadSubscriptionPlan();
-  const loadCurrentSubscriptionPlan = async () => {
-    const result = await getCurrentSubscriptionPlan();
-    if (result.code === 0) {
-      const status = result.data.status;
-      if (status) {
-        activation.value = true;
-      }
-    }
-  };
-  loadCurrentSubscriptionPlan();
 
-  const onNegativeClick = async () => {
-    window['$message'].success('取消');
-    activation.value = false;
-  };
+  // add 新增订阅计划
   const onPositiveClick = async () => {
+    isEdit.value = false;
     const result = await createSubscriptionPlan(formValue.value);
     console.log(result);
-    window['$message'].success('订阅');
-    activation.value = false;
+    if (result.code === 0) {
+      window['$message'].success('添加成功');
+      showModal.value = false;
+      reloadTable();
+    } else {
+      window['$message'].success(result.msg);
+    }
   };
-
-  // 获取SubscriptionPlan列表
+  // 重载页面
+  function reloadTable() {
+    actionRef.value.reload();
+  }
+  // 加载页面数据表格 获取SubscriptionPlan列表
   const loadDataTable = async (res: SubscriptionPlan) => {
     const result = await getSubscriptionPlanList(res);
     if (result.code === 0) {
