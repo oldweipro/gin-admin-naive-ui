@@ -8,6 +8,6 @@ export interface SubscriptionPlan {
   menuId: number;
   tag: number;
   status: number;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

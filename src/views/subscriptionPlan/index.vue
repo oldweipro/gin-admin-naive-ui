@@ -82,12 +82,11 @@
   import { BasicTable, TableAction } from '@/components/Table';
   import {
     createSubscriptionPlan,
-    getCurrentSubscriptionPlan,
-    getSubscriptionPlan,
+    deleteSubscriptionPlan,
     getSubscriptionPlanList,
   } from '@/api/transaction/subscriptionPlan';
   import { columns } from './columns';
-  import { formatToDateTime } from '@/utils/dateUtil';
+  // import { formatToDateTime } from '@/utils/dateUtil';
   import { SubscriptionPlan } from '@/model/subscriptionPlan';
   import { DeleteOutlined, EditOutlined } from '@vicons/antd';
 
@@ -95,7 +94,6 @@
   const actionRef = ref();
 
   const isEdit = ref(false);
-  const activation = ref(false);
   const showModal = ref(false);
 
   const rules = {
@@ -159,9 +157,10 @@
     ];
   }
 
-  const handleDelete = (record) => {
-    console.log('删除');
-    console.log(record);
+  const handleDelete = async (record: SubscriptionPlan) => {
+    const response = await deleteSubscriptionPlan(record);
+    window['$message'].success(response.msg);
+    reloadTable();
   };
 
   const handleEdit = (record) => {
@@ -190,9 +189,9 @@
   const loadDataTable = async (res: SubscriptionPlan) => {
     const result = await getSubscriptionPlanList(res);
     if (result.code === 0) {
-      result.data.list.forEach((fb) => {
-        fb.createdAt = formatToDateTime(new Date(fb.createdAt!));
-      });
+      // result.data.list.forEach((fb) => {
+      //   fb.createdAt = formatToDateTime(fb.createdAt!);
+      // });
       result.data.total = Math.ceil(result.data.total / result.data.pageSize);
       return result.data;
     } else {

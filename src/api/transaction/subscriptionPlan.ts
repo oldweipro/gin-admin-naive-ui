@@ -36,6 +36,22 @@ export function createSubscriptionPlan(data: SubscriptionPlan) {
 }
 
 /**
+ * @description: 删除订阅计划
+ */
+export function deleteSubscriptionPlan(data: SubscriptionPlan) {
+  return http.request<GinResponse<any>>(
+    {
+      url: '/subscriptionPlan/deleteSubscriptionPlan',
+      method: 'DELETE',
+      data,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
+
+/**
  * @description: 查询订阅计划
  */
 export function getSubscriptionPlan(params) {
