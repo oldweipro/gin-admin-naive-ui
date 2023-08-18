@@ -6,7 +6,6 @@
       :row-key="(row) => row.id"
       ref="actionRef"
       :actionColumn="actionColumn"
-      :scroll-x="1390"
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
@@ -80,17 +79,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
-  import { BasicTable } from '@/components/Table';
+  import { h, reactive, ref } from 'vue';
+  import { BasicTable, TableAction } from '@/components/Table';
   import {
-    getServerNodeList,
+    createSubscriptionPlan,
     getCurrentSubscriptionPlan,
     getSubscriptionPlan,
-    createSubscriptionPlan,
-  } from '@/api/ladder/ladder';
+    getSubscriptionPlanList,
+  } from '@/api/transaction/subscriptionPlan';
   import { columns } from './columns';
   import { formatToDateTime } from '@/utils/dateUtil';
   import { SubscriptionPlan } from '@/model/subscriptionPlan';
+  import { DeleteOutlined, EditOutlined } from '@vicons/antd';
 
   const formRef: any = ref(null);
   const actionRef = ref();
@@ -99,11 +99,6 @@
   const showModal = ref(false);
 
   const rules = {
-    ID: {
-      required: true,
-      message: '请输入编号',
-      trigger: 'blur',
-    },
     name: {
       required: true,
       message: '请输入名字',
@@ -128,11 +123,54 @@
     key: 'action',
     fixed: 'right',
     align: 'center',
+    render(record) {
+      return h(TableAction as any, {
+        style: 'text',
+        actions: createActions(record),
+      });
+    },
   });
+  function createActions(record) {
+    return [
+      {
+        label: '删除',
+        type: 'error',
+        // 配置 color 会覆盖 type
+        color: 'red',
+        icon: DeleteOutlined,
+        onClick: handleDelete.bind(null, record),
+        // 根据业务控制是否显示 isShow 和 auth 是并且关系
+        ifShow: () => {
+          return true;
+        },
+        // 根据权限控制是否显示: 有权限，会显示，支持多个
+        auth: ['basic_list'],
+      },
+      {
+        label: '编辑',
+        type: 'primary',
+        icon: EditOutlined,
+        onClick: handleEdit.bind(null, record),
+        ifShow: () => {
+          return true;
+        },
+        auth: ['basic_list'],
+      },
+    ];
+  }
 
+  const handleDelete = (record) => {
+    console.log('删除');
+    console.log(record);
+  };
+
+  const handleEdit = (record) => {
+    console.log('修改');
+    console.log(record);
+  };
   // getCurrentSubscriptionPlan 查询当前用户订阅计划
   const loadSubscriptionPlan = async () => {
-    const result = await getSubscriptionPlan({ ID: 1 });
+    const result = await getSubscriptionPlan({ id: 1 });
     if (result.code === 0) {
       // const status = result.data.subscriptionUser;
       console.log(result.data);
@@ -163,15 +201,15 @@
     activation.value = false;
   };
 
-  const loadDataTable = async (res) => {
-    const result = await getServerNodeList(res);
+  // 获取SubscriptionPlan列表
+  const loadDataTable = async (res: SubscriptionPlan) => {
+    const result = await getSubscriptionPlanList(res);
     if (result.code === 0) {
-      const serverNodeList = result.data;
-      serverNodeList.list.forEach((fb) => {
-        fb.createdAt = formatToDateTime(new Date(fb.createdAt));
+      result.data.list.forEach((fb) => {
+        fb.createdAt = formatToDateTime(new Date(fb.createdAt!));
       });
-      serverNodeList.total = Math.ceil(serverNodeList.total / serverNodeList.pageSize);
-      return serverNodeList;
+      result.data.total = Math.ceil(result.data.total / result.data.pageSize);
+      return result.data;
     } else {
       window['$message'].info(result.msg);
     }

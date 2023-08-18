@@ -6,7 +6,6 @@
       :row-key="(row) => row.id"
       ref="actionRef"
       :actionColumn="actionColumn"
-      :scroll-x="1390"
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>

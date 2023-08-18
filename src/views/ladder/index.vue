@@ -6,7 +6,7 @@
       :row-key="(row) => row.id"
       ref="actionRef"
       :actionColumn="actionColumn"
-      :scroll-x="1390"
+      :scroll-x="150"
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
@@ -14,17 +14,17 @@
         仅用于学习
       </template>
     </BasicTable>
-    <n-modal
-      v-model:show="activation"
-      :mask-closable="false"
-      preset="dialog"
-      title="确认"
-      content="将扣除xxx"
-      positive-text="确认"
-      negative-text="算了"
-      @positive-click="onPositiveClick"
-      @negative-click="onNegativeClick"
-    />
+    <n-modal v-model:show="activation" :show-icon="false" preset="dialog" title="选择您的订阅计划">
+      <n-card
+        v-for="(item, index) of subscriptionPlanList"
+        :key="index"
+        :title="item.name"
+        embedded
+        :bordered="false"
+      >
+        {{ item.description }}
+      </n-card>
+    </n-modal>
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="节点信息">
       <n-form
         :model="inboundsData"
@@ -75,22 +75,21 @@
 <script lang="ts" setup>
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
-  import {
-    findInboundsLink,
-    setInboundsLink,
-    getServerNodeList,
-    getCurrentSubscriptionPlan,
-    getSubscriptionPlan,
-  } from '@/api/ladder/ladder';
+  import { findInboundsLink, setInboundsLink, getServerNodeList } from '@/api/ladder/ladder';
   import { columns } from './columns';
   import { formatToDateTime } from '@/utils/dateUtil';
   import hljs from 'highlight.js';
   import QrcodeVue from 'qrcode.vue';
   import { copyToClip } from '@/utils/copy';
+  import { SubscriptionPlan } from '@/model/subscriptionPlan';
+  import {
+    getCurrentSubscriptionPlan,
+    getSubscriptionPlanByTag,
+  } from '@/api/transaction/subscriptionPlan';
 
   const formRef: any = ref(null);
   const actionRef = ref();
-  const subscriptionPlan = ref();
+  const subscriptionPlanList = ref<SubscriptionPlan[]>();
 
   const activation = ref(false);
   const showModal = ref(false);
@@ -119,7 +118,7 @@
   });
 
   const actionColumn = reactive({
-    width: 80,
+    width: 100,
     title: '操作',
     key: 'action',
     fixed: 'right',
@@ -129,7 +128,7 @@
         style: 'button',
         actions: [
           {
-            label: '导入Clash',
+            label: 'Clash',
             onClick: getInboundsLinkImportClash.bind(null, record),
             // 根据业务控制是否显示 isShow 和 auth 是并且关系
             ifShow: () => {
@@ -139,7 +138,7 @@
             auth: ['basic_list'],
           },
           {
-            label: '🔗复制链接',
+            label: '🔎',
             onClick: getInboundsLinkCopyLink64.bind(null, record),
             // 根据业务控制是否显示 isShow 和 auth 是并且关系
             ifShow: () => {
@@ -158,12 +157,9 @@
 
   // getCurrentSubscriptionPlan 查询当前用户订阅计划
   const loadSubscriptionPlan = async () => {
-    const result = await getSubscriptionPlan({ tag: 1 });
+    const result = await getSubscriptionPlanByTag({ tag: 1 });
     if (result.code === 0) {
-      // const status = result.data.subscriptionUser;
-      console.log(result.data);
-    } else {
-      console.log('暂无信息');
+      subscriptionPlanList.value = result.data;
     }
   };
   loadSubscriptionPlan();
@@ -177,15 +173,6 @@
     }
   };
   loadCurrentSubscriptionPlan();
-
-  const onNegativeClick = async () => {
-    window['$message'].success('取消');
-    activation.value = false;
-  };
-  const onPositiveClick = async () => {
-    window['$message'].success('订阅');
-    activation.value = false;
-  };
 
   const loadDataTable = async (res) => {
     const result = await getServerNodeList(res);
@@ -212,7 +199,7 @@
     const { msg } = await setInboundsLink(inboundsData.value);
     window['$message'].success(msg);
     showModal.value = false;
-    await reloadTable();
+    reloadTable();
   };
 
   // 导入Clash
