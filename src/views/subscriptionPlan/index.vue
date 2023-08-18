@@ -6,6 +6,7 @@
       :row-key="(row) => row.id"
       ref="actionRef"
       :actionColumn="actionColumn"
+      :scroll-x="100"
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
@@ -116,7 +117,7 @@
   });
 
   const actionColumn = reactive({
-    width: 80,
+    width: 150,
     title: '操作',
     key: 'action',
     fixed: 'right',
@@ -131,6 +132,16 @@
   function createActions(record) {
     return [
       {
+        label: '编辑',
+        type: 'primary',
+        icon: EditOutlined,
+        onClick: handleEdit.bind(null, record),
+        ifShow: () => {
+          return true;
+        },
+        auth: ['basic_list'],
+      },
+      {
         label: '删除',
         type: 'error',
         // 配置 color 会覆盖 type
@@ -142,16 +153,6 @@
           return true;
         },
         // 根据权限控制是否显示: 有权限，会显示，支持多个
-        auth: ['basic_list'],
-      },
-      {
-        label: '编辑',
-        type: 'primary',
-        icon: EditOutlined,
-        onClick: handleEdit.bind(null, record),
-        ifShow: () => {
-          return true;
-        },
         auth: ['basic_list'],
       },
     ];
