@@ -31,6 +31,6 @@ export const columns = [
   },
   {
     title: '创建时间',
-    key: 'CreatedAt',
+    key: 'createdAt',
   },
 ];

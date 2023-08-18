@@ -170,7 +170,7 @@
   const loadCurrentSubscriptionPlan = async () => {
     const result = await getCurrentSubscriptionPlan();
     if (result.code === 0) {
-      const status = result.data.subscriptionUser.status;
+      const status = result.data.status;
       if (status) {
         activation.value = true;
       }
@@ -192,7 +192,7 @@
     if (result.code === 0) {
       const serverNodeList = result.data;
       serverNodeList.list.forEach((fb) => {
-        fb.CreatedAt = formatToDateTime(new Date(fb.CreatedAt));
+        fb.createdAt = formatToDateTime(new Date(fb.createdAt));
       });
       serverNodeList.total = Math.ceil(serverNodeList.total / serverNodeList.pageSize);
       return serverNodeList;

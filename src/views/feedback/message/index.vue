@@ -111,7 +111,7 @@
     const result = await getFeedbackList(res);
     const feedbackList = result.data;
     feedbackList.list.forEach((fb) => {
-      fb.CreatedAt = formatToDateTime(new Date(fb.CreatedAt));
+      fb.createdAt = formatToDateTime(new Date(fb.createdAt));
     });
     feedbackList.total = Math.ceil(feedbackList.total / feedbackList.pageSize);
     return feedbackList;

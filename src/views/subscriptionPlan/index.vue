@@ -22,14 +22,6 @@
         ref="formRef"
         class="py-8"
       >
-        <n-form-item label="编号" path="ID">
-          <n-input-number
-            placeholder="编号"
-            :show-button="false"
-            :precision="0"
-            v-model:value="formValue.ID"
-          />
-        </n-form-item>
         <n-form-item label="订阅计划" path="name">
           <n-input v-model:value="formValue.name" placeholder="订阅计划名字" />
         </n-form-item>
@@ -66,6 +58,14 @@
             :show-button="false"
             :precision="0"
             v-model:value="formValue.menuId"
+          />
+        </n-form-item>
+        <n-form-item label="标记" path="tag">
+          <n-input-number
+            placeholder="标记"
+            :show-button="false"
+            :precision="0"
+            v-model:value="formValue.tag"
           />
         </n-form-item>
         <div style="margin-left: 80px">
@@ -112,13 +112,14 @@
   };
 
   const formValue = ref<SubscriptionPlan>({
-    ID: 0,
     name: '',
     description: '',
     price: 0,
     duration: 0,
     quantity: 0,
     menuId: 0,
+    tag: 1,
+    status: 1,
   });
 
   const actionColumn = reactive({
@@ -143,7 +144,7 @@
   const loadCurrentSubscriptionPlan = async () => {
     const result = await getCurrentSubscriptionPlan();
     if (result.code === 0) {
-      const status = result.data.subscriptionUser.status;
+      const status = result.data.status;
       if (status) {
         activation.value = true;
       }
@@ -156,7 +157,6 @@
     activation.value = false;
   };
   const onPositiveClick = async () => {
-    console.log(formValue.value);
     const result = await createSubscriptionPlan(formValue.value);
     console.log(result);
     window['$message'].success('订阅');
@@ -168,7 +168,7 @@
     if (result.code === 0) {
       const serverNodeList = result.data;
       serverNodeList.list.forEach((fb) => {
-        fb.CreatedAt = formatToDateTime(new Date(fb.CreatedAt));
+        fb.createdAt = formatToDateTime(new Date(fb.createdAt));
       });
       serverNodeList.total = Math.ceil(serverNodeList.total / serverNodeList.pageSize);
       return serverNodeList;

@@ -141,9 +141,9 @@
   onMounted(async () => {
     const { code, data } = await getCurrentUserPromptList({ page: 1, pageSize: 10 });
     if (code === 0) {
-      promptTemplate.value = data.list.map(({ ID, name, description }) => ({
+      promptTemplate.value = data.list.map(({ id, name, description }) => ({
         key: name,
-        value: ID.toString(),
+        value: id.toString(),
       }));
     }
   });
