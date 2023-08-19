@@ -1,6 +1,6 @@
 import { http } from '@/utils/http/axios';
 import { GinResponse } from '@/model/ginResponse';
-import { SubscriptionPlan } from '@/model/subscriptionPlan';
+import { SubscriptionPlan, SubscriptionUser } from '@/model/subscriptionPlan';
 import { GinPageTable } from '@/model/ginPageTable';
 
 /**
@@ -103,7 +103,7 @@ export function getSubscriptionPlanByTag(params) {
  * @description: 查询当前用户订阅计划
  */
 export function getCurrentSubscriptionPlan() {
-  return http.request<GinResponse<SubscriptionPlan>>(
+  return http.request<GinResponse<SubscriptionUser>>(
     {
       url: '/subscriptionPlan/getCurrentSubscriptionPlan',
       method: 'GET',

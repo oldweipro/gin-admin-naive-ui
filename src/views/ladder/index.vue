@@ -10,7 +10,12 @@
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
-        <n-button type="primary" @click="activation = true"> 订阅 </n-button>
+        <n-space>
+          <n-button type="primary" @click="activation = true"> 订阅 </n-button>
+        </n-space>
+        <n-space>
+          <n-tag type="info">{{ subscriptionUser.endTime }}</n-tag>
+        </n-space>
         仅用于学习
       </template>
     </BasicTable>
@@ -23,6 +28,7 @@
         :bordered="false"
       >
         {{ item.description }}
+        <n-button type="primary" @click="subscribe(item)"> 订阅 {{ item.price }} </n-button>
       </n-card>
     </n-modal>
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="节点信息">
@@ -81,15 +87,22 @@
   import hljs from 'highlight.js';
   import QrcodeVue from 'qrcode.vue';
   import { copyToClip } from '@/utils/copy';
-  import { SubscriptionPlan } from '@/model/subscriptionPlan';
+  import { SubscribeRequest, SubscriptionPlan, SubscriptionUser } from '@/model/subscriptionPlan';
   import {
     getCurrentSubscriptionPlan,
     getSubscriptionPlanByTag,
   } from '@/api/transaction/subscriptionPlan';
+  import { subscribePlan } from '@/api/transaction/subscriptionUser';
 
   const formRef: any = ref(null);
   const actionRef = ref();
   const subscriptionPlanList = ref<SubscriptionPlan[]>();
+
+  const subscriptionUser = ref<SubscriptionUser>({
+    subscriptionPlanId: 0,
+    userId: 0,
+    status: 0,
+  });
 
   const activation = ref(false);
   const showModal = ref(false);
@@ -155,6 +168,10 @@
     },
   });
 
+  const closeSubscription = () => {
+    activation.value = false;
+  };
+
   // getCurrentSubscriptionPlan 查询当前用户订阅计划
   const loadSubscriptionPlan = async () => {
     const result = await getSubscriptionPlanByTag({ tag: 1 });
@@ -166,10 +183,7 @@
   const loadCurrentSubscriptionPlan = async () => {
     const result = await getCurrentSubscriptionPlan();
     if (result.code === 0) {
-      const status = result.data.status;
-      if (status) {
-        activation.value = true;
-      }
+      subscriptionUser.value = result.data;
     }
   };
   loadCurrentSubscriptionPlan();
@@ -231,7 +245,7 @@
       window['$message'].error('复制失败');
     }
     showModal.value = false;
-    await reloadTable();
+    reloadTable();
   };
 
   // 复制链接
@@ -244,7 +258,7 @@
       window['$message'].error('您的浏览器不支持复制');
     }
     showModal.value = false;
-    await reloadTable();
+    reloadTable();
   };
 
   const getInboundsLinkCopyLink64 = async (record: Recordable) => {
@@ -259,6 +273,21 @@
     } else {
       window['$message'].error(msg);
     }
+  };
+
+  const subscribe = async (plan: SubscriptionPlan) => {
+    if (plan.id === undefined) {
+      window['$message'].error('必要参数为空');
+      return;
+    }
+    const request: SubscribeRequest = {
+      planId: plan.id!,
+    };
+    const ginResponse = await subscribePlan(request);
+    window['$message'].info(ginResponse.msg);
+    console.log(ginResponse);
+    reloadTable();
+    closeSubscription();
   };
 </script>
 
