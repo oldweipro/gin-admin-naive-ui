@@ -1,6 +1,7 @@
 import { h } from 'vue';
 import { NTag } from 'naive-ui';
 import { SubscriptionPlan } from '@/model/subscriptionPlan';
+import { formatToDateTime } from '@/utils/dateUtil';
 
 export const columns = [
   {
@@ -47,6 +48,17 @@ export const columns = [
   {
     title: '创建时间',
     key: 'createdAt',
-    width: 200,
+    width: 120,
+    render(row: SubscriptionPlan) {
+      return h(
+        NTag,
+        {
+          type: 'success',
+        },
+        {
+          default: () => formatToDateTime(new Date(row.createdAt!)),
+        }
+      );
+    },
   },
 ];

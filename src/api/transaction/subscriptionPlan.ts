@@ -20,13 +20,29 @@ export function getSubscriptionPlanList(params: SubscriptionPlan) {
 }
 
 /**
- * @description: 查询订阅计划
+ * @description: 创建订阅计划
  */
 export function createSubscriptionPlan(data: SubscriptionPlan) {
   return http.request<GinResponse<any>>(
     {
       url: '/subscriptionPlan/createSubscriptionPlan',
       method: 'POST',
+      data,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
+
+/**
+ * @description: 更新订阅计划
+ */
+export function updateSubscriptionPlan(data: SubscriptionPlan) {
+  return http.request<GinResponse<any>>(
+    {
+      url: '/subscriptionPlan/updateSubscriptionPlan',
+      method: 'PUT',
       data,
     },
     {

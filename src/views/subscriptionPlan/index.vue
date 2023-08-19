@@ -10,10 +10,24 @@
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
-        <n-button type="primary" @click="showModal = true"> 新增 </n-button>
+        <n-button
+          type="primary"
+          @click="
+            showModal = true;
+            createOrUpdate = 'create';
+          "
+        >
+          新增
+        </n-button>
       </template>
     </BasicTable>
-    <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="节点信息">
+    <n-modal
+      v-model:show="showModal"
+      :show-icon="false"
+      preset="dialog"
+      title="订阅计划"
+      :on-after-leave="closeModal"
+    >
       <n-form
         :label-width="80"
         :model="formValue"
@@ -85,16 +99,18 @@
     createSubscriptionPlan,
     deleteSubscriptionPlan,
     getSubscriptionPlanList,
+    updateSubscriptionPlan,
   } from '@/api/transaction/subscriptionPlan';
   import { columns } from './columns';
-  // import { formatToDateTime } from '@/utils/dateUtil';
   import { SubscriptionPlan } from '@/model/subscriptionPlan';
   import { DeleteOutlined, EditOutlined } from '@vicons/antd';
 
   const formRef: any = ref(null);
   const actionRef = ref();
+  const checkedRowIds = ref<number[]>();
 
-  const isEdit = ref(false);
+  // 行为控制标记（弹窗内部需要增还是改）
+  const createOrUpdate = ref('');
   const showModal = ref(false);
 
   const rules = {
@@ -122,14 +138,16 @@
     key: 'action',
     fixed: 'right',
     align: 'center',
-    render(record) {
+    render(record: SubscriptionPlan) {
       return h(TableAction as any, {
         style: 'text',
         actions: createActions(record),
       });
     },
   });
-  function createActions(record) {
+
+  // 操作
+  function createActions(record: SubscriptionPlan) {
     return [
       {
         label: '编辑',
@@ -158,41 +176,76 @@
     ];
   }
 
+  // 删除
   const handleDelete = async (record: SubscriptionPlan) => {
     const response = await deleteSubscriptionPlan(record);
     window['$message'].success(response.msg);
     reloadTable();
   };
 
-  const handleEdit = (record) => {
-    console.log('修改');
-    console.log(record);
+  // 更新
+  const handleEdit = (record: SubscriptionPlan) => {
+    createOrUpdate.value = 'update';
+    showModal.value = true;
+    formValue.value = record;
+    console.log(formRef);
+    console.log(formValue.value);
   };
 
-  // add 新增订阅计划
+  // 关闭弹框
+  const closeModal = () => {
+    showModal.value = false;
+    formValue.value = {
+      description: '',
+      duration: 0,
+      menuId: 0,
+      name: '',
+      price: 0,
+      quantity: 0,
+      status: 1,
+      tag: 0,
+    };
+  };
+
+  // 新增 更新 执行
   const onPositiveClick = async () => {
-    isEdit.value = false;
-    const result = await createSubscriptionPlan(formValue.value);
-    console.log(result);
-    if (result.code === 0) {
-      window['$message'].success('添加成功');
-      showModal.value = false;
-      reloadTable();
-    } else {
-      window['$message'].success(result.msg);
+    switch (createOrUpdate.value) {
+      case 'create':
+        const createResponse = await createSubscriptionPlan(formValue.value);
+        if (createResponse.code === 0) {
+          window['$message'].success('添加成功');
+          closeModal();
+          reloadTable();
+          // TODO 清理formValue
+        } else {
+          window['$message'].success(createResponse.msg);
+        }
+        break;
+      case 'update':
+        const updateResponse = await updateSubscriptionPlan(formValue.value);
+        if (updateResponse.code === 0) {
+          window['$message'].success('修改成功');
+          closeModal();
+          reloadTable();
+        } else {
+          window['$message'].success(updateResponse.msg);
+        }
+        break;
+      default:
+        console.log('11');
+        break;
     }
   };
+
   // 重载页面
   function reloadTable() {
     actionRef.value.reload();
   }
-  // 加载页面数据表格 获取SubscriptionPlan列表
+
+  // 加载分页数据表格
   const loadDataTable = async (res: SubscriptionPlan) => {
     const result = await getSubscriptionPlanList(res);
     if (result.code === 0) {
-      // result.data.list.forEach((fb) => {
-      //   fb.createdAt = formatToDateTime(fb.createdAt!);
-      // });
       result.data.total = Math.ceil(result.data.total / result.data.pageSize);
       return result.data;
     } else {
@@ -200,7 +253,8 @@
     }
   };
 
-  function onCheckedRow(rowKeys) {
+  function onCheckedRow(rowKeys: number[]) {
+    checkedRowIds.value = rowKeys;
     console.log(rowKeys);
   }
 </script>
