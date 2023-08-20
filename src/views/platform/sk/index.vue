@@ -155,7 +155,7 @@
   };
 
   const handleDelete = async (record: Recordable) => {
-    const { code, msg } = await deleteSecretKey({ ID: record.ID });
+    const { code, msg } = await deleteSecretKey({ id: record.id });
     if (code === 0) {
       window['$message'].success(msg);
     } else {
@@ -165,7 +165,7 @@
   };
 
   const copySk = async (record: Recordable) => {
-    const { code, msg, data } = await findSecretKey({ ID: record.ID });
+    const { code, msg, data } = await findSecretKey({ id: record.id });
     if (code === 0) {
       await copyToClip(data.sk);
       window['$message'].success('复制成功');

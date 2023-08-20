@@ -219,7 +219,7 @@
   // 导入Clash
   const getInboundsLinkImportClash = async (record: Recordable) => {
     // 组装链接并打开新标签页
-    const { code, data, msg } = await findInboundsLink({ sid: record.ID });
+    const { code, data, msg } = await findInboundsLink({ sid: record.id });
     if (code === 0) {
       inboundsData.value = data.inboundsData;
       inboundsData.value.domain = data.domain;
@@ -262,7 +262,7 @@
   };
 
   const getInboundsLinkCopyLink64 = async (record: Recordable) => {
-    const { code, data, msg } = await findInboundsLink({ sid: record.ID });
+    const { code, data, msg } = await findInboundsLink({ sid: record.id });
     if (code === 0) {
       inboundsData.value = data.inboundsData;
       inboundsData.value.domain = data.domain;

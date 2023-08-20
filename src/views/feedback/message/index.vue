@@ -148,7 +148,7 @@
   };
 
   const handleDelete = async (record: Recordable) => {
-    const { code, msg } = await deleteFeedback({ ID: record.ID });
+    const { code, msg } = await deleteFeedback({ id: record.id });
     if (code === 0) {
       window['$message'].success(msg);
     } else {
