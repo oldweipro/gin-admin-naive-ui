@@ -168,7 +168,6 @@
     const { code, msg, data } = await findSecretKey({ id: record.id });
     if (code === 0) {
       await copyToClip(data.sk);
-      window['$message'].success('复制成功');
     } else {
       window['$message'].error(msg);
     }

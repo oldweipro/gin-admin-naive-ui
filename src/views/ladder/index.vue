@@ -11,7 +11,7 @@
     >
       <template #tableTitle>
         <n-space>
-          <n-button type="primary" @click="activation = true"> 订阅 </n-button>
+          <n-button type="primary" @click="activation = true"> 订阅</n-button>
         </n-space>
         <n-space>
           <n-tag type="info">{{ subscriptionUser.endTime }}</n-tag>
@@ -28,7 +28,7 @@
         :bordered="false"
       >
         {{ item.description }}
-        <n-button type="primary" @click="subscribe(item)"> 订阅 {{ item.price }} </n-button>
+        <n-button type="primary" @click="subscribe(item)"> 订阅 {{ item.price }}</n-button>
       </n-card>
     </n-modal>
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="节点信息">
@@ -67,11 +67,11 @@
         <n-space>
           <n-button @click="() => (showModal = false)">取消</n-button>
           <n-button type="info" :loading="formBtnLoading" @click="confirmFormImportClash"
-            >导入Clash</n-button
-          >
+            >导入Clash
+          </n-button>
           <n-button type="info" :loading="formBtnLoading" @click="confirmFormCopyLink64"
-            >复制链接</n-button
-          >
+            >复制链接
+          </n-button>
         </n-space>
       </template>
     </n-modal>
@@ -81,7 +81,7 @@
 <script lang="ts" setup>
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
-  import { findInboundsLink, setInboundsLink, getServerNodeList } from '@/api/ladder/ladder';
+  import { findInboundsLink, getServerNodeList, setInboundsLink } from '@/api/ladder/ladder';
   import { columns } from './columns';
   import { formatToDateTime } from '@/utils/dateUtil';
   import hljs from 'highlight.js';
@@ -201,6 +201,7 @@
       window['$message'].info(result.msg);
     }
   };
+
   function reloadTable() {
     actionRef.value.reload();
   }
@@ -225,7 +226,6 @@
       inboundsData.value.domain = data.domain;
       inboundsData.value.region = data.region;
       await copyToClip(inboundsData.value.clashSub || '');
-      window['$message'].success('复制成功');
       const url = 'clash://install-config?url=';
       window.open(url + encodeURIComponent(inboundsData.value.clashSub));
     } else {
@@ -238,7 +238,6 @@
     // 复制到剪切板
     try {
       await copyToClip(inboundsData.value.clashSub || '');
-      window['$message'].success('复制成功');
       const url = 'clash://install-config?url=';
       window.open(url + encodeURIComponent(inboundsData.value.clashSub));
     } catch (e) {
@@ -253,7 +252,6 @@
     // 复制到剪切板
     try {
       await copyToClip(inboundsData.value.link64 || '');
-      window['$message'].success('复制成功');
     } catch (e) {
       window['$message'].error('您的浏览器不支持复制');
     }
@@ -269,7 +267,6 @@
       inboundsData.value.region = data.region;
       showModal.value = true;
       await copyToClip(inboundsData.value.link64 || '');
-      window['$message'].success('复制成功');
     } else {
       window['$message'].error(msg);
     }
