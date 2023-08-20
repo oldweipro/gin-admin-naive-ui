@@ -10,14 +10,14 @@
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
-        <n-button type="primary" @click="showModal = true"> 生成兑换码</n-button>
+        <n-button type="primary" @click="showModal = true">生成兑换码</n-button>
       </template>
     </BasicTable>
     <n-modal
       v-model:show="showModal"
       :show-icon="false"
       preset="dialog"
-      title="订阅计划"
+      title="生成兑换码"
       :on-after-leave="closeModal"
     >
       <n-form
@@ -81,15 +81,11 @@
 <script lang="ts" setup>
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
-  import {
-    deleteSubscriptionPlan,
-    getSubscriptionPlanList,
-  } from '@/api/transaction/subscriptionPlan';
   import { columns } from './columns';
-  import { SubscriptionPlan } from '@/model/subscriptionPlan';
-  import { DeleteOutlined } from '@vicons/antd';
-  import { RedeemRequest } from '@/model/redeem';
-  import { generateRedeemCode } from '@/api/transaction/redeem';
+  import { CopyOutlined } from '@vicons/antd';
+  import { RedeemRequest, RedeemResponse, RedeemSearch } from '@/model/redeem';
+  import { generateRedeemCode, getRedeemCodeList } from '@/api/transaction/redeem';
+  import { copyToClip } from '@/utils/copy';
 
   const formRef: any = ref(null);
   const actionRef = ref();
@@ -111,6 +107,7 @@
     totalCount: 1,
     amount: 0,
     perLimit: 1,
+    status: 1,
     expireTime: new Date().getTime(),
   });
 
@@ -120,7 +117,7 @@
     key: 'action',
     fixed: 'right',
     align: 'center',
-    render(record: SubscriptionPlan) {
+    render(record: RedeemResponse) {
       return h(TableAction as any, {
         style: 'text',
         actions: createActions(record),
@@ -129,15 +126,13 @@
   });
 
   // 操作
-  function createActions(record: SubscriptionPlan) {
+  function createActions(record: RedeemResponse) {
     return [
       {
-        label: '删除',
-        type: 'error',
-        // 配置 color 会覆盖 type
-        color: 'red',
-        icon: DeleteOutlined,
-        onClick: handleDelete.bind(null, record),
+        label: '复制',
+        type: 'primary',
+        icon: CopyOutlined,
+        onClick: handleCopyRedeemCode.bind(null, record),
         // 根据业务控制是否显示 isShow 和 auth 是并且关系
         ifShow: () => {
           return true;
@@ -148,27 +143,31 @@
     ];
   }
 
-  // 删除
-  const handleDelete = async (record: SubscriptionPlan) => {
-    const response = await deleteSubscriptionPlan(record);
-    window['$message'].success(response.msg);
-    reloadTable();
+  // 复制兑换码
+  const handleCopyRedeemCode = async (record: RedeemResponse) => {
+    await copyToClip(record.code);
   };
 
   // 关闭弹框
   const closeModal = () => {
     showModal.value = false;
-    formValue.value = { amount: 0, expireTime: 0, perLimit: 0, pieces: 0, totalCount: 0 };
+    formValue.value = {
+      amount: 0,
+      expireTime: 0,
+      perLimit: 0,
+      pieces: 0,
+      status: 0,
+      totalCount: 0,
+    };
   };
 
   // 新增 更新 执行
   const onPositiveClick = async () => {
     const createResponse = await generateRedeemCode(formValue.value);
     if (createResponse.code === 0) {
-      window['$message'].success('添加成功');
+      window['$message'].success(createResponse.msg);
       closeModal();
       reloadTable();
-      // TODO 清理formValue
     } else {
       window['$message'].success(createResponse.msg);
     }
@@ -180,8 +179,8 @@
   }
 
   // 加载分页数据表格
-  const loadDataTable = async (res: SubscriptionPlan) => {
-    const result = await getSubscriptionPlanList(res);
+  const loadDataTable = async (res: RedeemSearch) => {
+    const result = await getRedeemCodeList(res);
     if (result.code === 0) {
       result.data.total = Math.ceil(result.data.total / result.data.pageSize);
       return result.data;

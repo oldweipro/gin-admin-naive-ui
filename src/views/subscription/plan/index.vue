@@ -216,7 +216,6 @@
           window['$message'].success('添加成功');
           closeModal();
           reloadTable();
-          // TODO 清理formValue
         } else {
           window['$message'].success(createResponse.msg);
         }
