@@ -10,15 +10,7 @@
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
-        <n-button
-          type="primary"
-          @click="
-            showModal = true;
-            createOrUpdate = 'create';
-          "
-        >
-          新增
-        </n-button>
+        <n-button type="primary" @click="showModal = true"> 生成兑换码</n-button>
       </template>
     </BasicTable>
     <n-modal
@@ -36,50 +28,44 @@
         ref="formRef"
         class="py-8"
       >
-        <n-form-item label="订阅计划" path="name">
-          <n-input v-model:value="formValue.name" placeholder="订阅计划名字" />
-        </n-form-item>
-        <n-form-item label="描述" path="description">
-          <n-input placeholder="描述" v-model:value="formValue.description" />
-        </n-form-item>
-        <n-form-item label="价格" path="price">
+        <n-form-item label="生成个数" path="pieces">
           <n-input-number
-            placeholder="价格"
+            placeholder="对应生成多少个兑换码记录"
             :show-button="false"
             :precision="0"
-            v-model:value="formValue.price"
+            v-model:value="formValue.pieces"
           />
         </n-form-item>
-        <n-form-item label="时长" path="duration">
+        <n-form-item label="兑换码数量" path="totalCount">
           <n-input-number
-            placeholder="时长"
+            placeholder="兑换码数量"
             :show-button="false"
             :precision="0"
-            v-model:value="formValue.duration"
+            v-model:value="formValue.totalCount"
           />
         </n-form-item>
-        <n-form-item label="数量" path="quantity">
+        <n-form-item label="面额" path="amount">
           <n-input-number
-            placeholder="数量"
+            placeholder="面额"
             :show-button="false"
             :precision="0"
-            v-model:value="formValue.quantity"
+            v-model:value="formValue.amount"
           />
         </n-form-item>
-        <n-form-item label="菜单ID" path="menuId">
+        <n-form-item label="频次" path="perLimit">
           <n-input-number
-            placeholder="菜单ID"
+            placeholder="使用次数限制"
             :show-button="false"
             :precision="0"
-            v-model:value="formValue.menuId"
+            v-model:value="formValue.perLimit"
           />
         </n-form-item>
-        <n-form-item label="标记" path="tag">
-          <n-input-number
-            placeholder="标记"
-            :show-button="false"
-            :precision="0"
-            v-model:value="formValue.tag"
+        <n-form-item label="有效期" path="expireTime">
+          <n-date-picker
+            v-model:value="formValue.expireTime"
+            placeholder="有效期，过期时间"
+            type="datetime"
+            clearable
           />
         </n-form-item>
         <div style="margin-left: 80px">
@@ -96,21 +82,20 @@
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
   import {
-    createSubscriptionPlan,
     deleteSubscriptionPlan,
     getSubscriptionPlanList,
-    updateSubscriptionPlan,
   } from '@/api/transaction/subscriptionPlan';
   import { columns } from './columns';
   import { SubscriptionPlan } from '@/model/subscriptionPlan';
-  import { DeleteOutlined, EditOutlined } from '@vicons/antd';
+  import { DeleteOutlined } from '@vicons/antd';
+  import { RedeemRequest } from '@/model/redeem';
+  import { generateRedeemCode } from '@/api/transaction/redeem';
 
   const formRef: any = ref(null);
   const actionRef = ref();
   const checkedRowIds = ref<number[]>();
 
   // 行为控制标记（弹窗内部需要增还是改）
-  const createOrUpdate = ref('');
   const showModal = ref(false);
 
   const rules = {
@@ -121,15 +106,12 @@
     },
   };
 
-  const formValue = ref<SubscriptionPlan>({
-    name: '',
-    description: '',
-    price: 0,
-    duration: 0,
-    quantity: 0,
-    menuId: 0,
-    tag: 1,
-    status: 1,
+  const formValue = ref<RedeemRequest>({
+    pieces: 0,
+    totalCount: 1,
+    amount: 0,
+    perLimit: 1,
+    expireTime: new Date().getTime(),
   });
 
   const actionColumn = reactive({
@@ -149,16 +131,6 @@
   // 操作
   function createActions(record: SubscriptionPlan) {
     return [
-      {
-        label: '编辑',
-        type: 'primary',
-        icon: EditOutlined,
-        onClick: handleEdit.bind(null, record),
-        ifShow: () => {
-          return true;
-        },
-        auth: ['basic_list'],
-      },
       {
         label: '删除',
         type: 'error',
@@ -183,57 +155,22 @@
     reloadTable();
   };
 
-  // 更新
-  const handleEdit = (record: SubscriptionPlan) => {
-    createOrUpdate.value = 'update';
-    showModal.value = true;
-    formValue.value = record;
-    console.log(formRef);
-    console.log(formValue.value);
-  };
-
   // 关闭弹框
   const closeModal = () => {
     showModal.value = false;
-    formValue.value = {
-      description: '',
-      duration: 0,
-      menuId: 0,
-      name: '',
-      price: 0,
-      quantity: 0,
-      status: 1,
-      tag: 0,
-    };
+    formValue.value = { amount: 0, expireTime: 0, perLimit: 0, pieces: 0, totalCount: 0 };
   };
 
   // 新增 更新 执行
   const onPositiveClick = async () => {
-    switch (createOrUpdate.value) {
-      case 'create':
-        const createResponse = await createSubscriptionPlan(formValue.value);
-        if (createResponse.code === 0) {
-          window['$message'].success('添加成功');
-          closeModal();
-          reloadTable();
-          // TODO 清理formValue
-        } else {
-          window['$message'].success(createResponse.msg);
-        }
-        break;
-      case 'update':
-        const updateResponse = await updateSubscriptionPlan(formValue.value);
-        if (updateResponse.code === 0) {
-          window['$message'].success('修改成功');
-          closeModal();
-          reloadTable();
-        } else {
-          window['$message'].success(updateResponse.msg);
-        }
-        break;
-      default:
-        console.log('11');
-        break;
+    const createResponse = await generateRedeemCode(formValue.value);
+    if (createResponse.code === 0) {
+      window['$message'].success('添加成功');
+      closeModal();
+      reloadTable();
+      // TODO 清理formValue
+    } else {
+      window['$message'].success(createResponse.msg);
     }
   };
 
