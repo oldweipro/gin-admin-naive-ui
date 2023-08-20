@@ -107,7 +107,7 @@
     totalCount: 1,
     amount: 0,
     perLimit: 1,
-    status: 1,
+    status: 0,
     expireTime: new Date().getTime(),
   });
 
@@ -153,11 +153,11 @@
     showModal.value = false;
     formValue.value = {
       amount: 0,
-      expireTime: 0,
-      perLimit: 0,
+      expireTime: new Date().getTime(),
+      perLimit: 1,
       pieces: 0,
       status: 0,
-      totalCount: 0,
+      totalCount: 1,
     };
   };
 

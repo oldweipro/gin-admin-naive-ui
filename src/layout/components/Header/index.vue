@@ -165,11 +165,11 @@
     <template #header-extra>
       <a>鱼币: {{ fishCoin }} 枚</a>
     </template>
-    <n-button secondary strong :render-icon="renderIcon" @click="checkIn">签到 +1 鱼币 </n-button>
+    <n-button secondary strong :render-icon="renderIcon" @click="checkIn">签到 +1 鱼币</n-button>
     <n-divider />
     <n-form ref="formRef" inline :label-width="80" :model="formValue" :rules="rules" size="medium">
-      <n-form-item label="兑换鱼币" path="chatTicket">
-        <n-input v-model:value="formValue.chatTicket" placeholder="输入鱼币兑换码" />
+      <n-form-item label="兑换鱼币" path="redeemCode">
+        <n-input v-model:value="formValue.redeemCode" placeholder="输入鱼币兑换码" />
       </n-form-item>
       <n-form-item>
         <n-button attr-type="button" @click="recharge">验证</n-button>
@@ -226,10 +226,10 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, reactive, toRefs, ref, computed, unref, h } from 'vue';
-  import { useRouter, useRoute } from 'vue-router';
+  import { computed, defineComponent, h, reactive, ref, toRefs, unref } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
   import components from './components';
-  import { NDialogProvider, FormInst, useDialog, useMessage, NIcon } from 'naive-ui';
+  import { FormInst, NDialogProvider, NIcon, useDialog, useMessage } from 'naive-ui';
   import { TABS_ROUTES } from '@/store/mutation-types';
   import { UserInfoType, useUserStore } from '@/store/modules/user';
   import { useScreenLockStore } from '@/store/modules/screenLock';
@@ -240,11 +240,7 @@
   import { CashOutline as CashIcon } from '@vicons/ionicons5';
   import VueCropper from 'vue-cropperjs';
   import 'cropperjs/dist/cropper.css';
-  import {
-    getCurrentUserWallets,
-    handleValidateChatTicket,
-    checkInApi,
-  } from '@/api/transaction/transaction';
+  import { checkInApi, getCurrentUserWallets, redeemFishCoin } from '@/api/transaction/transaction';
   import { setSelfInfo } from '@/api/system/user';
 
   export default defineComponent({
@@ -357,10 +353,10 @@
       const showModal = ref(false);
       const showProfileModal = ref(false);
       const formValue = ref({
-        chatTicket: '',
+        redeemCode: '',
       });
       const rules = {
-        chatTicket: {
+        redeemCode: {
           required: true,
           message: '请输入鱼币兑换码',
           trigger: ['input'],
@@ -495,8 +491,8 @@
             return;
           }
           // 向后端发起验证
-          const { code, msg } = await handleValidateChatTicket({
-            ticketValue: formValue.value.chatTicket,
+          const { code, msg } = await redeemFishCoin({
+            redeemCode: formValue.value.redeemCode,
           });
           if (code === 0) {
             const { code, data } = await getCurrentUserWallets();
