@@ -23,21 +23,23 @@
       class="subModal"
       style="width: 95vh"
     >
-      <n-space justify="center" :vertical="isMobile">
-        <n-card
-          v-for="(item, index) of subscriptionPlanList"
-          :key="index"
-          :title="item.name"
-          embedded
-          :bordered="false"
-          :class="[isMobile ? 'smallCard' : 'largeCard']"
-        >
-          <TextComponent ref="textRef" :text="item.description" />
-          <n-button style="margin-top: 20px" type="primary" @click="subscribe(item)">
-            订阅 {{ item.price }}</n-button
+      <n-spin :show="spinShow">
+        <n-space justify="center" :vertical="isMobile">
+          <n-card
+            v-for="(item, index) of subscriptionPlanList"
+            :key="index"
+            :title="item.name"
+            embedded
+            :bordered="false"
+            :class="[isMobile ? 'smallCard' : 'largeCard']"
           >
-        </n-card>
-      </n-space>
+            <TextComponent ref="textRef" :text="item.description" />
+            <n-button style="margin-top: 20px" type="primary" @click="subscribe(item)">
+              订阅 {{ item.price }}
+            </n-button>
+          </n-card>
+        </n-space>
+      </n-spin>
     </n-modal>
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="节点信息">
       <n-form
@@ -91,7 +93,6 @@
   import { BasicTable, TableAction } from '@/components/Table';
   import { findInboundsLink, getServerNodeList, setInboundsLink } from '@/api/ladder/ladder';
   import { columns } from './columns';
-  import { formatToDateTime } from '@/utils/dateUtil';
   import hljs from 'highlight.js';
   import QrcodeVue from 'qrcode.vue';
   import { copyToClip } from '@/utils/copy';
@@ -115,6 +116,7 @@
     status: 0,
   });
 
+  const spinShow = ref(false);
   const activation = ref(false);
   const showModal = ref(false);
   const formBtnLoading = ref(false);
@@ -281,6 +283,7 @@
   };
 
   const subscribe = async (plan: SubscriptionPlan) => {
+    spinShow.value = true;
     if (plan.id === undefined) {
       window['$message'].error('必要参数为空');
       return;
@@ -292,6 +295,7 @@
     window['$message'].info(ginResponse.msg);
     console.log(ginResponse);
     reloadTable();
+    spinShow.value = false;
     closeSubscription();
   };
 </script>
@@ -301,13 +305,16 @@
     height: 108px;
     background-color: rgba(0, 128, 0, 0.12);
   }
+
   .green {
     height: 108px;
     background-color: rgba(0, 128, 0, 0.24);
   }
+
   .smallCard {
     width: 308px;
   }
+
   .largeCard {
     width: 408px;
   }

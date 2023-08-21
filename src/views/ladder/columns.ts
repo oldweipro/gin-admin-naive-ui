@@ -22,11 +22,39 @@ export const columns = [
     title: '上行流量',
     key: 'up',
     width: 80,
+    render(row) {
+      return h(
+        NTag,
+        {
+          type: 'success',
+        },
+        {
+          default: () =>
+            row.up > 1024 * 1024 * 1024
+              ? (row.up / (1024 * 1024 * 1024)).toFixed(2) + 'GB'
+              : (row.up / (1024 * 1024)).toFixed(2) + 'MB',
+        }
+      );
+    },
   },
   {
     title: '下行流量',
     key: 'down',
     width: 80,
+    render(row) {
+      return h(
+        NTag,
+        {
+          type: 'success',
+        },
+        {
+          default: () =>
+            row.down > 1024 * 1024 * 1024
+              ? (row.down / (1024 * 1024 * 1024)).toFixed(2) + 'GB'
+              : (row.down / (1024 * 1024)).toFixed(2) + 'MB',
+        }
+      );
+    },
   },
   {
     title: '到期时间',
