@@ -19,17 +19,29 @@
         仅用于学习
       </template>
     </BasicTable>
-    <n-modal v-model:show="activation" :show-icon="false" preset="dialog" title="选择您的订阅计划">
-      <n-card
-        v-for="(item, index) of subscriptionPlanList"
-        :key="index"
-        :title="item.name"
-        embedded
-        :bordered="false"
-      >
-        {{ item.description }}
-        <n-button type="primary" @click="subscribe(item)"> 订阅 {{ item.price }}</n-button>
-      </n-card>
+    <n-modal
+      v-model:show="activation"
+      :show-icon="false"
+      preset="dialog"
+      title="选择您的订阅计划"
+      class="subModal"
+      style="width: 95vh"
+    >
+      <n-space justify="center" :vertical="isMobile">
+        <n-card
+          v-for="(item, index) of subscriptionPlanList"
+          :key="index"
+          :title="item.name"
+          embedded
+          :bordered="false"
+          :class="[isMobile ? 'smallCard' : 'largeCard']"
+        >
+          <TextComponent ref="textRef" :text="item.description" />
+          <n-button style="margin-top: 20px" type="primary" @click="subscribe(item)">
+            订阅 {{ item.price }}</n-button
+          >
+        </n-card>
+      </n-space>
     </n-modal>
     <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="节点信息">
       <n-form
@@ -93,7 +105,10 @@
     getSubscriptionPlanByTag,
   } from '@/api/transaction/subscriptionPlan';
   import { subscribePlan } from '@/api/transaction/subscriptionUser';
+  import TextComponent from '@/views/ai/chat/message/TextComponent.vue';
+  import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
 
+  const { isMobile } = useBasicLayout();
   const formRef: any = ref(null);
   const actionRef = ref();
   const subscriptionPlanList = ref<SubscriptionPlan[]>();
@@ -288,4 +303,19 @@
   };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .light-green {
+    height: 108px;
+    background-color: rgba(0, 128, 0, 0.12);
+  }
+  .green {
+    height: 108px;
+    background-color: rgba(0, 128, 0, 0.24);
+  }
+  .smallCard {
+    width: 308px;
+  }
+  .largeCard {
+    width: 408px;
+  }
+</style>

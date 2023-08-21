@@ -40,7 +40,7 @@
           <n-input v-model:value="formValue.name" placeholder="订阅计划名字" />
         </n-form-item>
         <n-form-item label="描述" path="description">
-          <n-input placeholder="描述" v-model:value="formValue.description" />
+          <n-input type="textarea" placeholder="描述" v-model:value="formValue.description" />
         </n-form-item>
         <n-form-item label="价格" path="price">
           <n-input-number
@@ -188,8 +188,6 @@
     createOrUpdate.value = 'update';
     showModal.value = true;
     formValue.value = record;
-    console.log(formRef);
-    console.log(formValue.value);
   };
 
   // 关闭弹框
