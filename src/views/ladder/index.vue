@@ -10,13 +10,9 @@
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
-        <n-space>
-          <n-button type="primary" @click="activation = true"> 订阅</n-button>
+        <n-space justify="center">
+          <n-button type="primary" @click="activation = true">订阅</n-button>
         </n-space>
-        <n-space>
-          <n-tag type="info">{{ subscriptionUser.endTime }}</n-tag>
-        </n-space>
-        仅用于学习
       </template>
     </BasicTable>
     <n-modal
@@ -207,9 +203,6 @@
     const result = await getServerNodeList(res);
     if (result.code === 0) {
       const serverNodeList = result.data;
-      serverNodeList.list.forEach((fb) => {
-        fb.createdAt = formatToDateTime(new Date(fb.createdAt));
-      });
       serverNodeList.total = Math.ceil(serverNodeList.total / serverNodeList.pageSize);
       return serverNodeList;
     } else {
