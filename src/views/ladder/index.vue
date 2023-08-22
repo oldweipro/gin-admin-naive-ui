@@ -10,8 +10,9 @@
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
-        <n-space justify="center">
+        <n-space>
           <n-button type="primary" @click="activation = true">订阅</n-button>
+          <n-button type="primary" @click="tutorial">使用教程</n-button>
         </n-space>
       </template>
     </BasicTable>
@@ -21,7 +22,7 @@
       preset="dialog"
       title="选择您的订阅计划"
       class="subModal"
-      style="width: 95vh"
+      style="width: 100vh"
     >
       <n-spin :show="spinShow">
         <n-space justify="center" :vertical="isMobile">
@@ -289,6 +290,10 @@
       openSubscription();
       window['$message'].error(msg);
     }
+  };
+
+  const tutorial = () => {
+    window.open('https://pan.oldwei.com/software/ladder', '_blank');
   };
 
   const subscribe = async (plan: SubscriptionPlan) => {
