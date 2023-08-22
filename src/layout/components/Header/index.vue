@@ -167,18 +167,38 @@
     :on-mask-click="closeModal"
   >
     <template #header-extra>
-      <a>鱼币: {{ fishCoin }} 枚</a>
+      <a>鱼币: {{ walletStore.fishCoin }} 枚</a>
     </template>
-    <n-button secondary strong :render-icon="renderIcon" @click="checkIn">签到 +1 鱼币</n-button>
+    <n-space>
+      <n-button secondary strong :render-icon="renderIcon" @click="checkIn">签到 +1 鱼币</n-button>
+      <n-tooltip trigger="hover">
+        <template #trigger>
+          <n-button secondary strong :render-icon="renderTaobaoIcon" @click="bugRedeemCode"
+            >购买兑换码</n-button
+          >
+        </template>
+        【淘宝】https://m.tb.cn/h.5W9ZgaG?tk=l4fqdDsdca9 CZ0001 「开放鱼兑换码」点击链接直接打开
+        或者 淘宝搜索直接打开
+      </n-tooltip>
+    </n-space>
     <n-divider />
-    <n-form ref="formRef" inline :label-width="80" :model="formValue" :rules="rules" size="medium">
-      <n-form-item label="兑换鱼币" path="redeemCode">
-        <n-input v-model:value="formValue.redeemCode" placeholder="输入鱼币兑换码" />
-      </n-form-item>
-      <n-form-item>
-        <n-button attr-type="button" @click="recharge">验证</n-button>
-      </n-form-item>
-    </n-form>
+    <n-space>
+      <n-form
+        ref="formRef"
+        inline
+        :label-width="80"
+        :model="formValue"
+        :rules="rules"
+        size="medium"
+      >
+        <n-form-item label="兑换鱼币" path="redeemCode">
+          <n-input v-model:value="formValue.redeemCode" placeholder="输入鱼币兑换码" />
+        </n-form-item>
+        <n-form-item>
+          <n-button attr-type="button" @click="recharge">验证</n-button>
+        </n-form-item>
+      </n-form>
+    </n-space>
     <template #footer>
       <a></a>
     </template>
@@ -247,6 +267,8 @@
   import { checkInApi, redeemFishCoin } from '@/api/transaction/transaction';
   import { setSelfInfo } from '@/api/system/user';
   import { useWalletStore } from '@/store/modules/wallet';
+  import { copyToClip } from '@/utils/copy';
+  import { TaobaoOutlined } from '@vicons/antd';
 
   export default defineComponent({
     name: 'PageHeader',
@@ -339,6 +361,21 @@
         return h(NIcon, null, {
           default: () => h(CashIcon),
         });
+      };
+      const renderTaobaoIcon = () => {
+        return h(NIcon, null, {
+          default: () => h(TaobaoOutlined),
+        });
+      };
+      // 购买兑换码
+      const bugRedeemCode = async () => {
+        // 复制链接【淘宝】https://m.tb.cn/h.5W9ZgaG?tk=l4fqdDsdca9 CZ0001 「开放鱼兑换码」点击链接直接打开 或者 淘宝搜索直接打开
+        const taobaoLink =
+          '【淘宝】https://m.tb.cn/h.5W9ZgaG?tk=l4fqdDsdca9 CZ0001 「开放鱼兑换码」\n' +
+          '点击链接直接打开 或者 淘宝搜索直接打开';
+        const taobaoUrl = 'https://m.tb.cn/h.5W9ZgaG?tk=l4fqdDsdca9';
+        await copyToClip(taobaoLink);
+        window.open(taobaoUrl, '_blank');
       };
       // 签到
       const checkIn = async () => {
@@ -592,7 +629,9 @@
         cropper,
         userInfo,
         checkIn,
+        bugRedeemCode,
         renderIcon,
+        renderTaobaoIcon,
         walletStore,
       };
     },
