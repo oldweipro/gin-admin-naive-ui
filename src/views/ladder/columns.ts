@@ -19,7 +19,7 @@ export const columns = [
     width: 80,
   },
   {
-    title: '上行流量',
+    title: '已用上行流量',
     key: 'up',
     width: 80,
     render(row) {
@@ -38,7 +38,7 @@ export const columns = [
     },
   },
   {
-    title: '下行流量',
+    title: '已用下行流量',
     key: 'down',
     width: 80,
     render(row) {
@@ -64,11 +64,11 @@ export const columns = [
       return h(
         NTag,
         {
-          type: 'success',
+          type: row.expiryTime === 0 ? 'warning' : 'success',
         },
         {
           default: () =>
-            row.expiryTime === 0 ? '无限制' : formatToDateTime(new Date(row.expiryTime)),
+            row.expiryTime === 0 ? '暂无订阅计划' : formatToDateTime(new Date(row.expiryTime)),
         }
       );
     },

@@ -181,6 +181,10 @@
     },
   });
 
+  const openSubscription = () => {
+    activation.value = true;
+  };
+
   const closeSubscription = () => {
     activation.value = false;
   };
@@ -239,6 +243,7 @@
       const url = 'clash://install-config?url=';
       window.open(url + encodeURIComponent(inboundsData.value.clashSub));
     } else {
+      openSubscription();
       window['$message'].error(msg);
     }
   };
@@ -278,6 +283,7 @@
       showModal.value = true;
       await copyToClip(inboundsData.value.link64 || '');
     } else {
+      openSubscription();
       window['$message'].error(msg);
     }
   };
