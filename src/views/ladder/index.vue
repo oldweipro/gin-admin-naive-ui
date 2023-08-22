@@ -104,6 +104,9 @@
   import { subscribePlan } from '@/api/transaction/subscriptionUser';
   import TextComponent from '@/views/ai/chat/message/TextComponent.vue';
   import { useBasicLayout } from '@/hooks/chat/useBasicLayout';
+  import { useWalletStore } from '@/store/modules/wallet';
+
+  const useWallet = useWalletStore();
 
   const { isMobile } = useBasicLayout();
   const formRef: any = ref(null);
@@ -298,9 +301,13 @@
       planId: plan.id!,
     };
     const ginResponse = await subscribePlan(request);
-    window['$message'].info(ginResponse.msg);
-    console.log(ginResponse);
-    reloadTable();
+    if (ginResponse.msg === '余额不足') {
+      // 显示重置页面
+      useWallet.setShowModal(true);
+    } else {
+      window['$message'].info(ginResponse.msg);
+      reloadTable();
+    }
     spinShow.value = false;
     closeSubscription();
   };

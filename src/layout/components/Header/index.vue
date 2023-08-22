@@ -108,13 +108,13 @@
         </n-tooltip>
       </div>
       <div class="layout-header-trigger layout-header-trigger-min" v-show="true">
-        <n-tooltip placement="bottom" trigger="hover" @update:show="getCurrentWallets">
+        <n-tooltip placement="bottom" trigger="hover" @update:show="walletStore.syncFishCoin()">
           <template #trigger>
             <n-icon size="18">
-              <component :is="walletOutlined" @click="showModal = true" />
+              <component :is="walletOutlined" @click="openModal" />
             </n-icon>
           </template>
-          <span>钱包 {{ fishCoin }} 枚</span>
+          <span>钱包 {{ walletStore.fishCoin }} 枚</span>
         </n-tooltip>
       </div>
       <!-- 个人中心 -->
@@ -150,7 +150,7 @@
   <ProjectSetting ref="drawerSetting" />
   <!-- 钱包信息 -->
   <n-modal
-    v-model:show="showModal"
+    :show="walletStore.showModal"
     class="custom-card"
     preset="card"
     label-placement="center"
@@ -162,6 +162,9 @@
     aria-modal="true"
     role="dialog"
     :on-after-leave="closeModal"
+    :on-close="closeModal"
+    :on-esc="closeModal"
+    :on-mask-click="closeModal"
   >
     <template #header-extra>
       <a>鱼币: {{ fishCoin }} 枚</a>
@@ -241,8 +244,9 @@
   import { CashOutline as CashIcon } from '@vicons/ionicons5';
   import VueCropper from 'vue-cropperjs';
   import 'cropperjs/dist/cropper.css';
-  import { checkInApi, getCurrentUserWallets, redeemFishCoin } from '@/api/transaction/transaction';
+  import { checkInApi, redeemFishCoin } from '@/api/transaction/transaction';
   import { setSelfInfo } from '@/api/system/user';
+  import { useWalletStore } from '@/store/modules/wallet';
 
   export default defineComponent({
     name: 'PageHeader',
@@ -264,6 +268,7 @@
     emits: ['update:collapsed'],
     setup(props) {
       const userStore = useUserStore();
+      const walletStore = useWalletStore();
       const useLockscreen = useScreenLockStore();
       const message = useMessage();
       const dialog = useDialog();
@@ -273,7 +278,6 @@
       const userInfo = ref<UserInfoType>(userStore.info);
       const formRef = ref<FormInst | null>(null);
       const drawerSetting = ref();
-      const fishCoin = ref('0');
       const imgSrc = ref(userInfo.value.headerImg || '');
       const cropImg = ref('');
       const cropper = ref();
@@ -305,7 +309,7 @@
         const { code, msg } = await setSelfInfo({ headerImg: avatar });
         if (code === 0) {
           showProfileModal.value = false;
-          userStore.getInfo();
+          await userStore.getInfo();
         }
         message.info(msg);
       };
@@ -338,20 +342,10 @@
       };
       // 签到
       const checkIn = async () => {
-        const { code, msg } = await checkInApi();
-        if (code === 0) {
-          await getCurrentWallets();
-        }
+        const { msg } = await checkInApi();
+        await walletStore.syncFishCoin();
         message.info(msg);
       };
-
-      const getCurrentWallets = async () => {
-        const { code, data } = await getCurrentUserWallets();
-        if (code === 0) {
-          fishCoin.value = data.balance;
-        }
-      };
-      const showModal = ref(false);
       const showProfileModal = ref(false);
       const formValue = ref({
         redeemCode: '',
@@ -484,7 +478,14 @@
           }
         }
       };
+
+      const openModal = () => {
+        walletStore.setShowModal(true);
+        walletStore.syncFishCoin();
+        formValue.value.redeemCode = '';
+      };
       const closeModal = () => {
+        walletStore.setShowModal(false);
         formValue.value.redeemCode = '';
       };
       const recharge = async (e: MouseEvent) => {
@@ -495,18 +496,11 @@
             return;
           }
           // 向后端发起验证
-          const { code, msg } = await redeemFishCoin({
+          const { msg } = await redeemFishCoin({
             redeemCode: formValue.value.redeemCode,
           });
-          if (code === 0) {
-            const { code, data } = await getCurrentUserWallets();
-            if (code === 0) {
-              fishCoin.value = data.balance;
-              message.info(msg);
-            }
-          } else {
-            message.error(msg);
-          }
+          await walletStore.syncFishCoin();
+          message.info(msg);
         });
       };
 
@@ -565,6 +559,7 @@
         iconList,
         toggleFullScreen,
         recharge,
+        openModal,
         closeModal,
         doLogout,
         route,
@@ -580,14 +575,12 @@
         getMenuLocation,
         mixMenu,
         websiteConfig,
-        showModal,
         showProfileModal,
         bodyStyle,
         segmented,
         formRef,
         formValue,
         rules,
-        fishCoin,
         imgSrc,
         cropImg,
         setImage,
@@ -600,7 +593,7 @@
         userInfo,
         checkIn,
         renderIcon,
-        getCurrentWallets,
+        walletStore,
       };
     },
   });
