@@ -108,7 +108,7 @@
         </n-tooltip>
       </div>
       <div class="layout-header-trigger layout-header-trigger-min" v-show="true">
-        <n-tooltip placement="bottom">
+        <n-tooltip placement="bottom" trigger="hover" @update:show="getCurrentWallets">
           <template #trigger>
             <n-icon size="18">
               <component :is="walletOutlined" @click="showModal = true" />
@@ -161,6 +161,7 @@
     :segmented="segmented"
     aria-modal="true"
     role="dialog"
+    :on-after-leave="closeModal"
   >
     <template #header-extra>
       <a>鱼币: {{ fishCoin }} 枚</a>
@@ -260,6 +261,7 @@
         type: Boolean,
       },
     },
+    emits: ['update:collapsed'],
     setup(props) {
       const userStore = useUserStore();
       const useLockscreen = useScreenLockStore();
@@ -303,7 +305,7 @@
         const { code, msg } = await setSelfInfo({ headerImg: avatar });
         if (code === 0) {
           showProfileModal.value = false;
-          await userStore.getInfo;
+          userStore.getInfo();
         }
         message.info(msg);
       };
@@ -338,18 +340,17 @@
       const checkIn = async () => {
         const { code, msg } = await checkInApi();
         if (code === 0) {
-          await wallets();
+          await getCurrentWallets();
         }
         message.info(msg);
       };
 
-      const wallets = async () => {
+      const getCurrentWallets = async () => {
         const { code, data } = await getCurrentUserWallets();
         if (code === 0) {
           fishCoin.value = data.balance;
         }
       };
-      wallets();
       const showModal = ref(false);
       const showProfileModal = ref(false);
       const formValue = ref({
@@ -483,6 +484,9 @@
           }
         }
       };
+      const closeModal = () => {
+        formValue.value.redeemCode = '';
+      };
       const recharge = async (e: MouseEvent) => {
         e.preventDefault();
         formRef.value?.validate(async (errors) => {
@@ -561,6 +565,7 @@
         iconList,
         toggleFullScreen,
         recharge,
+        closeModal,
         doLogout,
         route,
         dropdownSelect,
@@ -595,6 +600,7 @@
         userInfo,
         checkIn,
         renderIcon,
+        getCurrentWallets,
       };
     },
   });
