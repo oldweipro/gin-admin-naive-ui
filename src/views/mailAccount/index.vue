@@ -56,7 +56,11 @@
   import { columns } from './columns';
   import { CopyOutlined } from '@vicons/antd';
   import { MailAccount, MailAccountIdsRequest, MailAccountSearch } from '@/model/mailAccount';
-  import { getMailAccountList, refreshOpenaiAccessToken } from '@/api/mailAccount/mailAccount';
+  import {
+    getMailAccountList,
+    refreshClaudeSessionKey,
+    refreshOpenaiAccessToken,
+  } from '@/api/mailAccount/mailAccount';
 
   const formRef: any = ref(null);
   const actionRef = ref();
@@ -94,7 +98,7 @@
   });
 
   const actionColumn = reactive({
-    width: 50,
+    width: 100,
     title: '操作',
     key: 'action',
     fixed: 'right',
@@ -111,6 +115,18 @@
   function createActions(record: MailAccount) {
     return [
       {
+        label: '刷新SK',
+        type: 'primary',
+        icon: CopyOutlined,
+        onClick: handleRefreshClaudeSessionKey.bind(null, record),
+        // 根据业务控制是否显示 isShow 和 auth 是并且关系
+        ifShow: () => {
+          return true;
+        },
+        // 根据权限控制是否显示: 有权限，会显示，支持多个
+        auth: ['basic_list'],
+      },
+      {
         label: '刷新AT',
         type: 'primary',
         icon: CopyOutlined,
@@ -125,7 +141,19 @@
     ];
   }
 
-  // 复制兑换码
+  // 刷新 ClaudeSessionKey
+  const handleRefreshClaudeSessionKey = async (record: MailAccount) => {
+    spinShow.value = true;
+    const ids: MailAccountIdsRequest = {
+      ids: [record.id],
+    };
+    const response = await refreshClaudeSessionKey(ids);
+    window['$message'].info(response.msg);
+    spinShow.value = false;
+    reloadTable();
+  };
+
+  // 刷新 OpenaiAccessToken
   const handleRefreshOpenaiAccessToken = async (record: MailAccount) => {
     spinShow.value = true;
     const ids: MailAccountIdsRequest = {

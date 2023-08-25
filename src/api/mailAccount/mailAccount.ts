@@ -38,3 +38,19 @@ export function refreshOpenaiAccessToken(data: MailAccountIdsRequest) {
     }
   );
 }
+
+/**
+ * @description: 刷新 Claude SessionKey
+ */
+export function refreshClaudeSessionKey(data: MailAccountIdsRequest) {
+  return http.request<GinResponse<any>>(
+    {
+      url: '/mailAccount/refreshClaudeChat',
+      method: 'POST',
+      data,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
