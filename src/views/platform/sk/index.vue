@@ -9,14 +9,27 @@
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
-        <n-button type="primary" @click="addTable">
-          <template #icon>
-            <n-icon>
-              <PlusOutlined />
-            </n-icon>
-          </template>
-          新建
-        </n-button>
+        <n-space>
+          <n-button type="primary" @click="addTable">
+            <template #icon>
+              <n-icon>
+                <PlusOutlined />
+              </n-icon>
+            </template>
+            新建
+          </n-button>
+          <n-tag
+            round
+            :bordered="false"
+            type="success"
+            @click="copyToClip('https://api.chat.oldwei.com/v1/chat/completions')"
+          >
+            接口地址: https://api.chat.oldwei.com/v1/chat/completions
+            <template #icon>
+              <n-icon :component="CheckmarkCircle" />
+            </template>
+          </n-tag>
+        </n-space>
       </template>
     </BasicTable>
 
@@ -60,6 +73,7 @@
   import { PlusOutlined } from '@vicons/antd';
   import { formatToDateTime } from '@/utils/dateUtil';
   import { copyToClip } from '@/utils/copy';
+  import { CheckmarkCircle } from '@vicons/ionicons5';
 
   const formRef: any = ref(null);
   const actionRef = ref();
