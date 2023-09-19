@@ -307,7 +307,7 @@
     };
     const ginResponse = await subscribePlan(request);
     if (ginResponse.msg === '余额不足') {
-      // 显示重置页面
+      // 显示充值页面
       useWallet.setShowModal(true);
     } else {
       window['$message'].info(ginResponse.msg);
