@@ -91,6 +91,7 @@
     }
     spinShow.value = false;
     closeSubscription();
+    await loadData();
   };
   const closeSubscription = () => {
     activation.value = false;
