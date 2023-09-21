@@ -9,7 +9,7 @@
       preset="dialog"
       title="选择您的订阅计划"
       class="subModal"
-      style="width: 100vh"
+      style="width: 50vh"
     >
       <n-spin :show="spinShow">
         <n-space justify="center" :vertical="isMobile">
