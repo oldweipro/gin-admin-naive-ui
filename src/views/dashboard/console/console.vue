@@ -240,6 +240,7 @@
     TagsOutlined,
     SettingOutlined,
   } from '@vicons/antd';
+  import { Random } from 'mockjs';
 
   const loading = ref(true);
   const visits = ref<any>({});
@@ -324,11 +325,39 @@
   ];
 
   onMounted(async () => {
-    const { data } = await getConsoleInfo();
-    visits.value = data.visits;
-    saleroom.value = data.saleroom;
-    orderLarge.value = data.orderLarge;
-    volume.value = data.volume;
+    const consoleInfo = {
+      //访问量
+      visits: {
+        dayVisits: Random.float(10000, 99999, 2, 2),
+        rise: Random.float(10, 99),
+        decline: Random.float(10, 99),
+        amount: Random.float(99999, 999999, 3, 5),
+      },
+      //销售额
+      saleroom: {
+        weekSaleroom: Random.float(10000, 99999, 2, 2),
+        amount: Random.float(99999, 999999, 2, 2),
+        degree: Random.float(10, 99),
+      },
+      //订单量
+      orderLarge: {
+        weekLarge: Random.float(10000, 99999, 2, 2),
+        rise: Random.float(10, 99),
+        decline: Random.float(10, 99),
+        amount: Random.float(99999, 999999, 2, 2),
+      },
+      //成交额度
+      volume: {
+        weekLarge: Random.float(10000, 99999, 2, 2),
+        rise: Random.float(10, 99),
+        decline: Random.float(10, 99),
+        amount: Random.float(99999, 999999, 2, 2),
+      },
+    };
+    visits.value = consoleInfo.visits;
+    saleroom.value = consoleInfo.saleroom;
+    orderLarge.value = consoleInfo.orderLarge;
+    volume.value = consoleInfo.volume;
     loading.value = false;
   });
 </script>
