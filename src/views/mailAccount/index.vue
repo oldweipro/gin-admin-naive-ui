@@ -11,7 +11,10 @@
         @update:checked-row-keys="onCheckedRow"
       >
         <template #tableTitle>
-          <n-button type="primary" @click="showModal = true">生成兑换码</n-button>
+          <n-space>
+            <n-button type="primary" @click="showModal = true">生成兑换码</n-button>
+            <n-button type="primary" @click="handleSyncChatGPTAccessToken">同步AT</n-button>
+          </n-space>
         </template>
       </BasicTable>
     </n-spin>
@@ -60,6 +63,7 @@
     getMailAccountList,
     refreshClaudeSessionKey,
     refreshOpenaiAccessToken,
+    syncChatGPTAccessToken,
   } from '@/api/mailAccount/mailAccount';
 
   const formRef: any = ref(null);
@@ -162,6 +166,13 @@
     const response = await refreshOpenaiAccessToken(ids);
     window['$message'].info(response.msg);
     spinShow.value = false;
+    reloadTable();
+  };
+
+  // 同步 OpenaiAccessToken
+  const handleSyncChatGPTAccessToken = async () => {
+    const response = await syncChatGPTAccessToken();
+    window['$message'].info(response.msg);
     reloadTable();
   };
 

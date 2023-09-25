@@ -54,3 +54,18 @@ export function refreshClaudeSessionKey(data: MailAccountIdsRequest) {
     }
   );
 }
+
+/**
+ * @description: 同步 openai AccessToken
+ */
+export function syncChatGPTAccessToken() {
+  return http.request<GinResponse<any>>(
+    {
+      url: '/mailAccount/syncChatGPTAccessToken',
+      method: 'POST',
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
