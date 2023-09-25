@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue';
-  import { useMessage } from 'naive-ui';
   import TextComponent from '@/views/ai/chat/message/TextComponent.vue';
   import AvatarComponent from '@/views/ai/chat/message/Avatar.vue';
   import SvgIcon from '@/components/SvgIcon/index.vue';
@@ -29,8 +28,6 @@
   const { isMobile } = useBasicLayout();
 
   const { iconRender } = useIconRender();
-
-  const message = useMessage();
 
   const textRef = ref<HTMLElement>();
 

@@ -23,7 +23,7 @@
                 </template>
                 <template v-else>
                   <div>
-                    <message
+                    <Message
                       v-for="(item, index) of dataSources"
                       :key="index"
                       :date-time="item.dateTime"
@@ -141,7 +141,7 @@
   onMounted(async () => {
     const { code, data } = await getCurrentUserPromptList({ page: 1, pageSize: 10 });
     if (code === 0) {
-      promptTemplate.value = data.list.map(({ id, name, description }) => ({
+      promptTemplate.value = data.list.map(({ id, name }) => ({
         key: name,
         value: id.toString(),
       }));
