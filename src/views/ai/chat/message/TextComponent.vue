@@ -72,9 +72,6 @@
           if (code) {
             copyToClip(code).then(() => {
               btn.textContent = '复制成功';
-              setTimeout(() => {
-                btn.textContent = '复制代码';
-              }, 1000);
             });
           }
         });
