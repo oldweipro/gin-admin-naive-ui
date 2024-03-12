@@ -180,15 +180,16 @@
   import { useUserStore } from '@/store/modules/user';
   import { useMessage } from 'naive-ui';
   import { ResultEnum } from '@/enums/httpEnum';
-  import { PersonOutline, LockClosedOutline, LogoGithub, LogoFacebook } from '@vicons/ionicons5';
+  import { LockClosedOutline, LogoFacebook, LogoGithub, PersonOutline } from '@vicons/ionicons5';
   import { PageEnum } from '@/enums/pageEnum';
   import { websiteConfig } from '@/config/website.config';
   import {
     forgotPasswordWithSmsCode,
-    sendSmsCode,
     getCaptcha,
     registerWithSmsCode,
+    sendSmsCode,
   } from '@/api/system/user';
+
   interface FormState {
     username: string;
     password: string;
@@ -196,16 +197,19 @@
     captcha: string;
     captchaId: string;
   }
+
   interface RegisterState {
     username: string;
     password: string;
     smsCode: string;
   }
+
   interface ForgotPasswordState {
     phone: string;
     password: string;
     smsCode: string;
   }
+
   const password = ref();
   const captcha = ref();
   const formRef = ref();

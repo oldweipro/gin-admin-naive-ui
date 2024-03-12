@@ -174,11 +174,10 @@
       <n-tooltip trigger="hover">
         <template #trigger>
           <n-button secondary strong :render-icon="renderTaobaoIcon" @click="bugRedeemCode"
-            >购买兑换码</n-button
-          >
+            >新平台
+          </n-button>
         </template>
-        【淘宝】https://m.tb.cn/h.5W9ZgaG?tk=l4fqdDsdca9 CZ0001 「开放鱼兑换码」点击链接直接打开
-        或者 淘宝搜索直接打开
+        Nothing
       </n-tooltip>
     </n-space>
     <n-divider />
@@ -267,7 +266,6 @@
   import { checkInApi, redeemFishCoin } from '@/api/transaction/transaction';
   import { setSelfInfo } from '@/api/system/user';
   import { useWalletStore } from '@/store/modules/wallet';
-  import { copyToClip } from '@/utils/copy';
   import { TaobaoOutlined } from '@vicons/antd';
 
   export default defineComponent({
@@ -369,12 +367,7 @@
       };
       // 购买兑换码
       const bugRedeemCode = async () => {
-        // 复制链接【淘宝】https://m.tb.cn/h.5W9ZgaG?tk=l4fqdDsdca9 CZ0001 「开放鱼兑换码」点击链接直接打开 或者 淘宝搜索直接打开
-        const taobaoLink =
-          '【淘宝】https://m.tb.cn/h.5W9ZgaG?tk=l4fqdDsdca9 CZ0001 「开放鱼兑换码」\n' +
-          '点击链接直接打开 或者 淘宝搜索直接打开';
-        const taobaoUrl = 'https://m.tb.cn/h.5W9ZgaG?tk=l4fqdDsdca9';
-        await copyToClip(taobaoLink);
+        const taobaoUrl = 'https://pay.oldwei.com/buy/1';
         window.open(taobaoUrl, '_blank');
       };
       // 签到

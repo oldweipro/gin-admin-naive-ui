@@ -101,8 +101,8 @@
 
 <script lang="ts" setup>
   import type { Ref } from 'vue';
-  import { computed, onMounted, onUnmounted, ref, h } from 'vue';
-  import { useDialog, useMessage, NTag } from 'naive-ui';
+  import { computed, h, onMounted, onUnmounted, ref } from 'vue';
+  import { NTag, useDialog, useMessage } from 'naive-ui';
   import html2canvas from 'html2canvas';
   import { useScroll } from '@/hooks/chat/useScroll';
   import { useChat } from '@/hooks/chat/useChat';
@@ -369,6 +369,7 @@
       loading.value = false;
     }
   }
+
   // TODO 重新生成 结束============================
 
   function handleExport() {
