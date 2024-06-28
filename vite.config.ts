@@ -7,6 +7,8 @@ import { OUTPUT_DIR } from './build/constant';
 import { createProxy } from './build/vite/proxy';
 import pkg from './package.json';
 import { format } from 'date-fns';
+import wasm from 'vite-plugin-wasm';
+import topLevelAwait from 'vite-plugin-top-level-await';
 const { dependencies, devDependencies, name, version } = pkg;
 
 const __APP_INFO__ = {
@@ -42,7 +44,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       ],
       dedupe: ['vue'],
     },
-    plugins: createVitePlugins(viteEnv, isBuild, prodMock),
+    plugins: [wasm(), topLevelAwait(), createVitePlugins(viteEnv, isBuild, prodMock)],
     define: {
       __APP_INFO__: JSON.stringify(__APP_INFO__),
     },

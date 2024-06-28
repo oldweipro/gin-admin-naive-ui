@@ -63,6 +63,7 @@
                   <SvgIcon icon="ri:download-2-line" />
                 </span>
               </HoverButton>
+              <n-tag> tokens: {{ textNums }} </n-tag>
               <NAutoComplete
                 v-model:value="prompt"
                 :options="searchOptions"
@@ -113,6 +114,7 @@
   import { chatCompletions, createConversation } from '@/api/ai/chat';
   import Message from '@/views/ai/chat/message/message.vue';
   import { getCurrentUserPromptList } from '@/api/ai/prompt';
+  import { encoding_for_model } from 'tiktoken';
 
   let controller = new AbortController();
 
@@ -135,6 +137,11 @@
   // console.log(dataSources.value)
   const prompt = ref<string>('');
   const promptId = ref<number>(0);
+  const textNums = computed(() => {
+    const enc = encoding_for_model('gpt-4-32k-0613');
+    const encoded = enc.encode(prompt.value);
+    return encoded.length;
+  });
   const loading = ref<boolean>(false);
   const inputRef = ref<Ref | null>(null);
 
@@ -199,6 +206,7 @@
     try {
       // 定义接口
       const fetchChatAPIOnce = async () => {
+        // 判断当前余额是否可以支付这条消息问答。
         // console.log('发起请求时的会话ID: ', chatStore.active!)
         await chatCompletions({
           prompt: message,
